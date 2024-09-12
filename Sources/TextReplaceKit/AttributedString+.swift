@@ -9,19 +9,14 @@ extension AttributedString {
         regexExpression: String = Self.defaultShortcodeRegexExpression,
         with transform: ShortcodeTransform
     ) {
-        guard self.startIndex != self.endIndex else { return }
-        var substring: AttributedSubstring = self[self.startIndex...self.endIndex]
+        var substring: AttributedSubstring = self[startIndex...]
         while let range = substring.range(of: regexExpression, options: .regularExpression) {
             let attributedSubstring = self[range]
             let shortcode = Shortcode(rawValue: String(attributedSubstring.characters))
             if let s = transform(shortcode) {
                 self.replaceSubrange(range, with: s)
             }
-            
-            substring = self[range.lowerBound...]
-            if substring.characters.count == 0 {
-                break
-            }
+            substring = substring[range.upperBound...]
         }
     }
     

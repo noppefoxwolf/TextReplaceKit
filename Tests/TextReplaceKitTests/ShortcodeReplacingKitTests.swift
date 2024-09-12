@@ -27,3 +27,15 @@ import RegexBuilder
     #expect(attributedString == "")
 }
 
+@Test func replaceSingle() async throws {
+    var attributedString = AttributedString(":apple:")
+    attributedString.replaceShortcode { shortcode in
+        switch shortcode.name {
+        case "apple": AttributedString("🍎")
+        case "smile": AttributedString("😊")
+        default: nil
+        }
+    }
+    #expect(attributedString == "🍎")
+}
+

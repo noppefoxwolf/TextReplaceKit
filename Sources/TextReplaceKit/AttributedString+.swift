@@ -10,13 +10,18 @@ extension AttributedString {
         with transform: ShortcodeTransform
     ) {
         var substring: AttributedSubstring = self[startIndex...]
+        var ranges: [Range<AttributedString.Index>] = []
         while let range = substring.range(of: regexExpression, options: .regularExpression) {
+            ranges.append(range)
+            substring = substring[range.upperBound...]
+        }
+        
+        for range in ranges.reversed() {
             let attributedSubstring = self[range]
             let shortcode = Shortcode(rawValue: String(attributedSubstring.characters))
             if let s = transform(shortcode) {
                 self.replaceSubrange(range, with: s)
             }
-            substring = substring[range.upperBound...]
         }
     }
     

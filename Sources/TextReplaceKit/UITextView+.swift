@@ -6,7 +6,7 @@ extension UITextView {
         case document
     }
     
-    public typealias ShortcodeTransform = (AttributedString.Shortcode) throws -> AttributedString
+    public typealias ShortcodeTransform = (AttributedString.Shortcode) -> AttributedString?
     
     public func replaceShortcode(_ transform: ShortcodeTransform, granularity: Granularity) {
         switch granularity {

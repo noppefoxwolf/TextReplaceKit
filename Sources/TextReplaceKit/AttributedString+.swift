@@ -3,7 +3,7 @@ import Foundation
 extension AttributedString {
     public static let defaultShortcodeRegexExpression = ":([a-zA-Z_]+):"
     
-    public typealias ShortcodeTransform = (AttributedString.Shortcode) throws -> AttributedString
+    public typealias ShortcodeTransform = (AttributedString.Shortcode) -> AttributedString?
     
     mutating public func replaceShortcode(
         regexExpression: String = Self.defaultShortcodeRegexExpression,
@@ -11,7 +11,7 @@ extension AttributedString {
     ) {
         while let range = self.range(of: regexExpression, options: .regularExpression) {
             let shortcode = Shortcode(rawValue: String(self[range].characters))
-            if let s = try? transform(shortcode) {
+            if let s = transform(shortcode) {
                 self.replaceSubrange(range, with: s)
             }
         }

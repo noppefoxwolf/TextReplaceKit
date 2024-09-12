@@ -1,17 +1,17 @@
 import Testing
-@testable import ShortcodeReplacingKit
+@testable import TextReplaceKit
 import UIKit
 import RegexBuilder
 
 @Test func replaceShortcode() async throws {
-    var attributedString = AttributedString(":apple: 👨‍👩‍👦👨‍👩‍👦👨‍👩‍👦 :smile: :apple:")
+    var attributedString = AttributedString(":apple: 👨‍👩‍👦 Hello 👨‍👩‍👦👨‍👩‍👦 :smile: :apple:")
     attributedString.replaceShortcode { shortcode in
         switch shortcode.name {
         case "apple": AttributedString("🍎")
         case "smile": AttributedString("😊")
-        default: throw CancellationError()
+        default: nil
         }
     }
-    #expect(attributedString == "🍎 👨‍👩‍👦👨‍👩‍👦👨‍👩‍👦 😊 🍎")
+    #expect(attributedString == "🍎 👨‍👩‍👦 Hello 👨‍👩‍👦👨‍👩‍👦 😊 🍎")
 }
 

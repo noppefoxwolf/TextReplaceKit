@@ -9,20 +9,17 @@ extension AttributedString {
         regexExpression: String = Self.defaultShortcodeRegexExpression,
         with transform: ShortcodeTransform
     ) {
-        var ranges: [Range<AttributedString.Index>] = []
-        while let range = self.range(of: regexExpression, options: .regularExpression) {
-            if ranges.contains(range) {
-                break
-            }
-            ranges.append(range)
-        }
-        ranges.reverse()
-        
-        for range in ranges {
+        var substring: AttributedSubstring = self[self.startIndex...self.endIndex]
+        while let range = substring.range(of: regexExpression, options: .regularExpression) {
             let attributedSubstring = self[range]
             let shortcode = Shortcode(rawValue: String(attributedSubstring.characters))
-            if var s = transform(shortcode) {
+            if let s = transform(shortcode) {
                 self.replaceSubrange(range, with: s)
+            }
+            
+            substring = self[range.lowerBound...]
+            if substring.characters.count == 0 {
+                break
             }
         }
     }

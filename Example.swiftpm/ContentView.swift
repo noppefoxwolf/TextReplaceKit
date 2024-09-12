@@ -34,9 +34,18 @@ final class TextViewController: UIViewController, UITextViewDelegate {
         return true
     }
     
-    func transform(_ shortcode: AttributedString.Shortcode) throws -> AttributedString {
-        var attributedString = AttributedString("🦊")
-        attributedString.font = textView.font
-        return attributedString
+    func transform(_ shortcode: AttributedString.Shortcode) -> AttributedString? {
+        switch shortcode.name {
+        case "fox":
+            var attributedString = AttributedString("🦊")
+            attributedString.font = textView.font
+            return attributedString
+        case "smile":
+            var attributedString = AttributedString("😊")
+            attributedString.font = textView.font
+            return attributedString
+        default:
+            return nil
+        }
     }
 }

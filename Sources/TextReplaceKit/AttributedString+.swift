@@ -9,9 +9,19 @@ extension AttributedString {
         regexExpression: String = Self.defaultShortcodeRegexExpression,
         with transform: ShortcodeTransform
     ) {
+        var ranges: [Range<AttributedString.Index>] = []
         while let range = self.range(of: regexExpression, options: .regularExpression) {
-            let shortcode = Shortcode(rawValue: String(self[range].characters))
-            if let s = transform(shortcode) {
+            if ranges.contains(range) {
+                break
+            }
+            ranges.append(range)
+        }
+        ranges.reverse()
+        
+        for range in ranges {
+            let attributedSubstring = self[range]
+            let shortcode = Shortcode(rawValue: String(attributedSubstring.characters))
+            if var s = transform(shortcode) {
                 self.replaceSubrange(range, with: s)
             }
         }
@@ -29,7 +39,7 @@ extension AttributedString {
 
 extension AttributedString {
     public struct Shortcode: Sendable {
-        let rawValue: String
+        public let rawValue: String
         
         public var name: Substring {
             let start = rawValue.index(after: rawValue.startIndex)

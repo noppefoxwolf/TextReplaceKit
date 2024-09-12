@@ -15,3 +15,15 @@ import RegexBuilder
     #expect(attributedString == "🍎 👨‍👩‍👦 Hello 👨‍👩‍👦👨‍👩‍👦 😊 🍎")
 }
 
+@Test func replaceEmpty() async throws {
+    var attributedString = AttributedString("")
+    attributedString.replaceShortcode { shortcode in
+        switch shortcode.name {
+        case "apple": AttributedString("🍎")
+        case "smile": AttributedString("😊")
+        default: nil
+        }
+    }
+    #expect(attributedString == "")
+}
+

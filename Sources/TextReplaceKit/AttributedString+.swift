@@ -9,6 +9,7 @@ extension AttributedString {
         regexExpression: String = Self.defaultShortcodeRegexExpression,
         with transform: ShortcodeTransform
     ) {
+        guard self.startIndex != self.endIndex else { return }
         var substring: AttributedSubstring = self[self.startIndex...self.endIndex]
         while let range = substring.range(of: regexExpression, options: .regularExpression) {
             let attributedSubstring = self[range]

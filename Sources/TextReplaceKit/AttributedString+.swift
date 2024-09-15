@@ -1,7 +1,7 @@
 import Foundation
 
 extension AttributedString {
-    public static let defaultShortcodeRegexExpression = ":([a-zA-Z_]+):"
+    public static let defaultShortcodeRegexExpression = ":([a-zA-Z0-9_]+):"
     
     public typealias ShortcodeTransform = (AttributedString.Shortcode) -> AttributedString?
     

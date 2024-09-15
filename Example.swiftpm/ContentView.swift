@@ -3,7 +3,7 @@ import TextReplaceKit
 
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
-        TextViewController()
+        UINavigationController(rootViewController: TextViewController())
     }
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
@@ -27,22 +27,38 @@ final class TextViewController: UIViewController, UITextViewDelegate {
             textView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: textView.trailingAnchor),
         ])
+        
+        navigationController?.isToolbarHidden = false
+        toolbarItems = [
+            UIBarButtonItem(
+                image: UIImage(systemName: "doc.on.clipboard.fill"),
+                primaryAction: UIAction { [unowned self] _ in
+                    textView.insertText(":fox: :fox::smile: :fox:")
+                    textViewDidChange(textView)
+                }
+            ),
+        ]
     }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        textView.replaceShortcode(transform(_:), granularity: .selectedLine)
-        return true
+    func textViewDidChange(_ textView: UITextView) {
+        textView.replaceShortcode(
+            transform(_:),
+            granularity: .selectedLine
+        )
     }
     
-    func transform(_ shortcode: AttributedString.Shortcode) -> AttributedString? {
+    func transform(_ shortcode: Shortcode) -> AttributedString? {
+        print(shortcode.rawValue)
         switch shortcode.name {
         case "fox":
             var attributedString = AttributedString("🦊")
             attributedString.font = textView.font
+            attributedString.foregroundColor = textView.textColor
             return attributedString
         case "smile":
             var attributedString = AttributedString("😊")
             attributedString.font = textView.font
+            attributedString.foregroundColor = textView.textColor
             return attributedString
         default:
             return nil

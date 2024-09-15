@@ -1,12 +1,13 @@
 import Foundation
 
 extension AttributedString {
-    public static let defaultShortcodeRegexExpression = ":([a-zA-Z0-9_]+):"
+    public static let defaultShortcodeRegexExpression = #"(^|\s):([a-zA-Z0-9_]+):(?!\S)"#
     
-    public typealias ShortcodeTransform = (AttributedString.Shortcode) -> AttributedString?
+    public typealias ShortcodeTransform = (Shortcode) -> AttributedString?
     
     mutating public func replaceShortcode(
         regexExpression: String = Self.defaultShortcodeRegexExpression,
+        decoder: ShortcodeChunkDecoder = ShortcodeChunkDecoder(),
         with transform: ShortcodeTransform
     ) {
         var substring: AttributedSubstring = self[startIndex...]
@@ -18,8 +19,15 @@ extension AttributedString {
         
         for range in ranges.reversed() {
             let attributedSubstring = self[range]
-            let shortcode = Shortcode(rawValue: String(attributedSubstring.characters))
-            if let s = transform(shortcode) {
+            let chunkText = String(attributedSubstring.characters)
+            let chunk = decoder.decode(chunkText)
+            if let chunk, var s = transform(chunk.shortcode) {
+                if chunk.hasPrefixWhiteSpace {
+                    s.insert(AttributedString(" "), at: s.startIndex)
+                }
+                if chunk.hasSuffixWhiteSpace {
+                    s.append(AttributedString(" "))
+                }
                 self.replaceSubrange(range, with: s)
             }
         }
@@ -35,14 +43,3 @@ extension AttributedString {
     }
 }
 
-extension AttributedString {
-    public struct Shortcode: Sendable {
-        public let rawValue: String
-        
-        public var name: Substring {
-            let start = rawValue.index(after: rawValue.startIndex)
-            let end = rawValue.index(before: rawValue.endIndex)
-            return rawValue[start..<end]
-        }
-    }
-}

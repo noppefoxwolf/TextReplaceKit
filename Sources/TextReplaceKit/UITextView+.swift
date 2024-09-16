@@ -53,7 +53,7 @@ extension UITextView {
         )
         if lineAttributedText != newLineAttributedText {
             let newLineNSAttributedText = NSAttributedString(newLineAttributedText)
-            replace(range, withAttributedText: newLineNSAttributedText)
+            self.workaround.replace(range, withAttributedText: newLineNSAttributedText)
         }
     }
 }

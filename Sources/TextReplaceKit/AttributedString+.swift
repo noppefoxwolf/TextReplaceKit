@@ -2,6 +2,7 @@ import Foundation
 
 extension AttributedString {
     public static let defaultShortcodeRegexExpression = #"(^|\s):([a-zA-Z0-9_]+):(?!\S)"#
+    public static let whitespace = " "
     
     public typealias ShortcodeTransform = (Shortcode) -> AttributedString?
     
@@ -23,10 +24,10 @@ extension AttributedString {
             let chunk = decoder.decode(chunkText)
             if let chunk, var s = transform(chunk.shortcode) {
                 if chunk.hasPrefixWhiteSpace {
-                    s.insert(AttributedString(" "), at: s.startIndex)
+                    s.insert(AttributedString(Self.whitespace), at: s.startIndex)
                 }
                 if chunk.hasSuffixWhiteSpace {
-                    s.append(AttributedString(" "))
+                    s.append(AttributedString(Self.whitespace))
                 }
                 self.replaceSubrange(range, with: s)
             }

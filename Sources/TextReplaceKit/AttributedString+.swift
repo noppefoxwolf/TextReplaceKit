@@ -44,3 +44,23 @@ extension AttributedString {
     }
 }
 
+
+extension NSAttributedString {
+    func toMutable() -> NSMutableAttributedString {
+        NSMutableAttributedString(attributedString: self)
+    }
+    
+    func toModern() -> AttributedString {
+        AttributedString(self)
+    }
+}
+
+extension AttributedString {
+    func toFoundation() -> NSAttributedString {
+        NSAttributedString(self)
+    }
+    
+    var string: String {
+        String(characters)
+    }
+}

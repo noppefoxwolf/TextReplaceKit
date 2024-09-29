@@ -1,5 +1,7 @@
 import Testing
 import UIKit
+@testable import TextReplaceKit
+import RegexBuilder
 
 @MainActor
 @Suite
@@ -97,74 +99,67 @@ struct TextViewReplaceSelectionTests {
         textView.selectedTextRange = textView.textRange(from: p3, to: p3)
         #expect(textView.visualText == "The Hello[] World !!")
     }
+    
+    
+
 }
 
-extension UITextView {
-    func closestPosition(to position: UITextPosition, within range: UITextRange) -> UITextPosition {
-        let lower = compare(range.start, to: position)
-        let upper = compare(range.end, to: position)
-        if upper == .orderedAscending || upper == .orderedSame {
-            return range.end
-        }
-        if lower == .orderedDescending || lower == .orderedSame {
-            return range.start
-        }
-        return range.end
+@Suite
+struct AttributedStringSpec {
+    @Test("NSTextAttachmentも1characterとして扱われる")
+    func attributedStringCount() {
+        let attr = AttributedString(NSAttributedString(attachment: TextAttachment("👐")))
+        #expect(attr.characters.count == 1)
+        #expect(attr.string.count == 1)
+        #expect(attr.toFoundation().length == 1)
+        #expect(attr.toFoundation().string.count == 1)
     }
     
-    func contains(_ range: UITextRange, to position: UITextPosition) -> Bool {
-        switch compare(range.start, to: position) {
-        case .orderedAscending, .orderedSame:
-            switch compare(range.end, to: position) {
-            case .orderedDescending, .orderedSame:
-                return true
-            default:
-                return false
-            }
-        default:
-            return false
-        }
+    @Test("SubstringのIndexは途中からになる")
+    func substringIndex() {
+        let attr = AttributedString("foo bar hoge")
+        let subattr = attr[attr.range(of: "bar")!]
+        print(subattr.startIndex)
+        // NSAttributedStringは常に0から始まる
     }
 }
 
-extension UITextView {
-    func apply(_ range: UITextRange, withAttributedText attributedText: NSAttributedString) {
-        enum Anchor {
-            case leading
-            case trailing
-        }
-        
-        let closestPosition = closestPosition(to: selectedTextRange!.start, within: range)
-        let isRangeContainsPosition = contains(range, to: selectedTextRange!.start)
-        let anchor = closestPosition == range.start ? Anchor.leading : Anchor.trailing
-        
-        let beforeTextRange = selectedTextRange
-        replace(range, withAttributedText: attributedText)
-        let afterTextRange = selectedTextRange
-        
-        guard let beforeTextRange, let afterTextRange else { return }
-        
-        switch anchor {
-        case .leading:
-            self.selectedTextRange = beforeTextRange
-        case .trailing:
-            let offset = offset(from: closestPosition, to: isRangeContainsPosition ? closestPosition : beforeTextRange.start)
-            let from = position(from: afterTextRange.start, offset: offset)
-            let to = position(from: afterTextRange.end, offset: offset)
-            guard let from, let to else { return }
-            let fixedTextRange = textRange(from: from, to: to)
-            if let fixedTextRange {
-                selectedTextRange = fixedTextRange
+@Suite
+struct RegexSpec {
+    @Test
+    func regex() {
+        let regex = Regex {
+            Capture {
+                ChoiceOf {
+                    /^/
+                    One(.whitespace)
+                }
+            }
+            ":"
+            Capture {
+                OneOrMore {
+                    CharacterClass(
+                        .anyOf("_"),
+                        ("a"..."z"),
+                        ("A"..."Z"),
+                        ("0"..."9")
+                    )
+                }
+            }
+            ":"
+            NegativeLookahead {
+                One(.whitespace.inverted)
             }
         }
         
-    }
-    
-    /// Replaces the text in a document that is in the specified range And fixs selection offset.
-    /// - Parameters:
-    ///   - range: A range of text in a document.
-    ///   - text: A string to replace the text in range.
-    func apply(_ range: UITextRange, withText text: String) {
-        apply(range, withAttributedText: NSAttributedString(string: text))
+        let text1 = ":foo:"
+        #expect(text1.matches(of: regex).count == 1)
+        let text2 = ":foo::foo:"
+        #expect(text2.matches(of: regex).count == 0)
+        let text3 = ":foo: :foo:"
+        #expect(text3.matches(of: regex).count == 2)
     }
 }
+
+
+

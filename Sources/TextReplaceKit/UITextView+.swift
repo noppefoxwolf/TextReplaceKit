@@ -58,3 +58,71 @@ extension UITextView {
     }
 }
 
+extension UITextView {
+    func closestPosition(to position: UITextPosition, within range: UITextRange) -> UITextPosition {
+        let lower = compare(range.start, to: position)
+        let upper = compare(range.end, to: position)
+        if upper == .orderedAscending || upper == .orderedSame {
+            return range.end
+        }
+        if lower == .orderedDescending || lower == .orderedSame {
+            return range.start
+        }
+        return range.end
+    }
+    
+    func contains(_ range: UITextRange, to position: UITextPosition) -> Bool {
+        switch compare(range.start, to: position) {
+        case .orderedAscending, .orderedSame:
+            switch compare(range.end, to: position) {
+            case .orderedDescending, .orderedSame:
+                return true
+            default:
+                return false
+            }
+        default:
+            return false
+        }
+    }
+}
+
+extension UITextView {
+    func apply(_ range: UITextRange, withAttributedText attributedText: NSAttributedString) {
+        enum Anchor: Sendable {
+            case leading
+            case trailing
+        }
+        
+        let closestPosition = closestPosition(to: selectedTextRange!.start, within: range)
+        let isRangeContainsPosition = contains(range, to: selectedTextRange!.start)
+        let anchor = closestPosition == range.start ? Anchor.leading : Anchor.trailing
+        
+        let beforeTextRange = selectedTextRange
+        replace(range, withAttributedText: attributedText)
+        let afterTextRange = selectedTextRange
+        
+        guard let beforeTextRange, let afterTextRange else { return }
+        
+        switch anchor {
+        case .leading:
+            self.selectedTextRange = beforeTextRange
+        case .trailing:
+            let offset = offset(from: closestPosition, to: isRangeContainsPosition ? closestPosition : beforeTextRange.start)
+            let from = position(from: afterTextRange.start, offset: offset)
+            let to = position(from: afterTextRange.end, offset: offset)
+            guard let from, let to else { return }
+            let fixedTextRange = textRange(from: from, to: to)
+            if let fixedTextRange {
+                selectedTextRange = fixedTextRange
+            }
+        }
+    }
+    
+    /// Replaces the text in a document that is in the specified range And fixs selection offset.
+    /// - Parameters:
+    ///   - range: A range of text in a document.
+    ///   - text: A string to replace the text in range.
+    func apply(_ range: UITextRange, withText text: String) {
+        apply(range, withAttributedText: NSAttributedString(string: text))
+    }
+}

@@ -10,18 +10,17 @@ extension UITextView {
     
     public func replaceShortcode(
         _ transform: ShortcodeTransform,
-        regexExpression: String = AttributedString.defaultShortcodeRegexExpression,
         granularity: Granularity
     ) {
         switch granularity {
         case .selectedLine:
-            replaceShortcodeSelectedLine(regexExpression: regexExpression, transform: transform)
+            replaceShortcodeSelectedLine(transform: transform)
         case .document:
-            replaceShortcodeWholeDocument(regexExpression: regexExpression, transform: transform)
+            replaceShortcodeWholeDocument(transform: transform)
         }
     }
     
-    func replaceShortcodeSelectedLine(regexExpression: String, transform: ShortcodeTransform) {
+    func replaceShortcodeSelectedLine(transform: ShortcodeTransform) {
         guard let selectedTextRange else { return }
         let selectedLineRangeStart = tokenizer.position(
             from: selectedTextRange.start,
@@ -36,19 +35,18 @@ extension UITextView {
         guard let selectedLineRangeStart, let selectedLineRangeEnd else { return }
         let selectedLineRange = textRange(from: selectedLineRangeStart, to: selectedLineRangeEnd)
         guard let selectedLineRange else { return }
-        replaceShortcode(in: selectedLineRange, regexExpression: regexExpression, transform: transform)
+        replaceShortcode(in: selectedLineRange, transform: transform)
     }
     
-    func replaceShortcodeWholeDocument(regexExpression: String, transform: ShortcodeTransform) {
+    func replaceShortcodeWholeDocument(transform: ShortcodeTransform) {
         let documentRange = textRange(from: beginningOfDocument, to: endOfDocument)
         guard let documentRange else { return }
-        replaceShortcode(in: documentRange, regexExpression: regexExpression, transform: transform)
+        replaceShortcode(in: documentRange, transform: transform)
     }
     
-    func replaceShortcode(in range: UITextRange, regexExpression: String, transform: ShortcodeTransform) {
+    func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform) {
         let lineAttributedText = attributedText(in: range)
         let newLineAttributedText = lineAttributedText.replacingShortcode(
-            regexExpression: regexExpression,
             with: transform,
             replaceAction: { _,nsRange, s in
                 let start = position(

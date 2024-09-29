@@ -17,8 +17,7 @@ struct AttributedStringSpec {
     func substringIndex() {
         let attr = AttributedString("foo bar hoge")
         let subattr = attr[attr.range(of: "bar")!]
-        print(subattr.startIndex)
-        // NSAttributedStringは常に0から始まる
+        #expect(attr.startIndex != subattr.startIndex)
     }
 }
 

@@ -6,7 +6,7 @@ extension UITextView {
         case document
     }
     
-    public typealias ShortcodeTransform = (Shortcode) -> AttributedString?
+    public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
     
     public func replaceShortcode(
         _ transform: ShortcodeTransform,
@@ -46,7 +46,8 @@ extension UITextView {
     
     func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform) {
         let lineAttributedText = attributedText(in: range)
-        let newLineAttributedText = lineAttributedText.replacingShortcode(
+        let newLineAttributedText = lineAttributedText.copyAsMutable()
+        newLineAttributedText.replaceShortcode(
             with: transform,
             replaceAction: { _,nsRange, s in
                 let start = position(

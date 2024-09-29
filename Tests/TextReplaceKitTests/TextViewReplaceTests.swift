@@ -11,14 +11,14 @@ struct TextViewReplaceTests {
         textView.attributedText = NSAttributedString(string: ":one: :two:")
         #expect(textView.visualText == ":one: :two:[]")
         
-        let transform = { (shortcode: Shortcode) -> AttributedString? in
+        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             switch shortcode.name {
             case "one":
-                AttributedString(NSAttributedString(attachment: TextAttachment("1️⃣")))
+                NSAttributedString(attachment: TextAttachment("1️⃣"))
             case "two":
-                AttributedString(NSAttributedString(attachment: TextAttachment("2️⃣")))
+                NSAttributedString(attachment: TextAttachment("2️⃣"))
             case "three":
-                AttributedString(NSAttributedString(attachment: TextAttachment("3️⃣")))
+                NSAttributedString(attachment: TextAttachment("3️⃣"))
             default:
                 nil
             }

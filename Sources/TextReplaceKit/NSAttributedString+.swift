@@ -3,7 +3,7 @@ import Foundation
 extension NSMutableAttributedString {
     public static let whitespace = " "
     
-    public typealias ShortcodeTransform = (Shortcode) -> AttributedString?
+    public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
     
     public func replaceShortcode(
         decoder: ShortcodeChunkDecoder = ShortcodeChunkDecoder(),
@@ -16,7 +16,7 @@ extension NSMutableAttributedString {
         enumerateMatches(regex) { substring, nsRange, _ in
             let chunkText = String(substring)
             let chunk = decoder.decode(chunkText)
-            if let chunk, let s = transform(chunk.shortcode)?.toFoundation().toMutable() {
+            if let chunk, let s = transform(chunk.shortcode)?.copyAsMutable() {
                 if chunk.hasPrefixWhiteSpace {
                     s.insert(NSAttributedString(string: Self.whitespace), at: 0)
                 }
@@ -31,7 +31,7 @@ extension NSMutableAttributedString {
 
 extension NSAttributedString {
     // default reversed
-    public func enumerateMatches<R: RegexComponent>(
+    func enumerateMatches<R: RegexComponent>(
         _ regex: R,
         using block: (Substring, NSRange, inout Bool) -> Void
     ) {
@@ -45,25 +45,10 @@ extension NSAttributedString {
             }
         }
     }
-    
-    public func replacingShortcode(
-        with transform: NSMutableAttributedString.ShortcodeTransform,
-        replaceAction: (NSMutableAttributedString, NSRange, NSAttributedString) -> Void = {
-            $0.replaceCharacters(in: $1, with: $2)
-        }
-    ) -> NSAttributedString {
-        let newValue = self.toMutable()
-        newValue.replaceShortcode(
-            with: transform,
-            replaceAction: replaceAction
-        )
-        return newValue
-    }
 }
 
-
 extension NSAttributedString {
-    func toMutable() -> NSMutableAttributedString {
+    func copyAsMutable() -> NSMutableAttributedString {
         NSMutableAttributedString(attributedString: self)
     }
     

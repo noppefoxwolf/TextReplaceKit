@@ -19,5 +19,17 @@ struct AttributedStringSpec {
         let subattr = attr[attr.range(of: "bar")!]
         #expect(attr.startIndex != subattr.startIndex)
     }
+    
+    @Test("mutableの方の変更は元のNSAttrに反映されない")
+    func mutableAttributedString() {
+        let attr = NSAttributedString("original")
+        let mutableAttr = NSMutableAttributedString(attributedString: attr)
+        mutableAttr.replaceCharacters(in: NSRange(location: 0, length: 8), with: "changed")
+        
+        #expect(attr.string == "original")
+        #expect(mutableAttr.string == "changed")
+        #expect(attr != mutableAttr)
+        #expect(attr.string != mutableAttr.string)
+    }
 }
 

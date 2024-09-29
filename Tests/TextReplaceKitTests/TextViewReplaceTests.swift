@@ -5,7 +5,7 @@ import UIKit
 @MainActor
 @Suite
 struct TextViewReplaceTests {
-    @Test(.enabled(if: false))
+    @Test
     func insert() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")

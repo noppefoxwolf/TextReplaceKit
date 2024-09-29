@@ -46,13 +46,25 @@ extension UITextView {
     }
     
     func replaceShortcode(in range: UITextRange, regexExpression: String, transform: ShortcodeTransform) {
-        let lineAttributedText = AttributedString(attributedText(in: range))
+        let lineAttributedText = attributedText(in: range)
         let newLineAttributedText = lineAttributedText.replacingShortcode(
             regexExpression: regexExpression,
-            with: transform
+            with: transform,
+            replaceAction: { _,nsRange, s in
+                let start = position(
+                    from: range.start,
+                    offset: nsRange.location
+                )!
+                let end = position(
+                    from: range.start,
+                    offset: nsRange.location + nsRange.length
+                )!
+                let textRange = textRange(from: start, to: end)!
+                self.apply(textRange, withAttributedText: s)
+            }
         )
         if lineAttributedText != newLineAttributedText {
-            let newLineNSAttributedText = NSAttributedString(newLineAttributedText)
+            let newLineNSAttributedText = newLineAttributedText
             self.workaround.replace(range, withAttributedText: newLineNSAttributedText)
         }
     }

@@ -53,13 +53,16 @@ extension UITextView {
                 let start = position(
                     from: range.start,
                     offset: nsRange.location
-                )!
+                )
                 let end = position(
                     from: range.start,
                     offset: nsRange.location + nsRange.length
-                )!
-                let textRange = textRange(from: start, to: end)!
-                self.apply(textRange, withAttributedText: s)
+                )
+                guard let start, let end else { return }
+                let textRange = textRange(from: start, to: end)
+                if let textRange {
+                    self.apply(textRange, withAttributedText: s)
+                }
             }
         )
         if lineAttributedText != newLineAttributedText {

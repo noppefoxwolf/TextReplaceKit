@@ -1,19 +1,16 @@
 import Foundation
 
-extension NSMutableAttributedString {
+extension NSAttributedString {
     public static let whitespace = " "
-    
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
     
-    public func replaceShortcode(
+    func enumerateShortcodes(
         decoder: ShortcodeChunkDecoder = ShortcodeChunkDecoder(),
-        with transform: ShortcodeTransform,
-        replaceAction: (NSMutableAttributedString, NSRange, NSAttributedString) -> Void = {
-            $0.replaceCharacters(in: $1, with: $2)
-        }
+        transform: (Shortcode) -> NSAttributedString?,
+        using block: (NSAttributedString, NSRange, inout Bool) -> Void
     ) {
         let regex = Regex.shortcodeWithPadding
-        enumerateMatches(regex) { substring, nsRange, _ in
+        enumerateMatches(regex) { substring, nsRange, shouldStop in
             let chunkText = String(substring)
             let chunk = decoder.decode(chunkText)
             if let chunk, let s = transform(chunk.shortcode)?.copyAsMutable() {
@@ -23,13 +20,11 @@ extension NSMutableAttributedString {
                 if chunk.hasSuffixWhiteSpace {
                     s.append(NSAttributedString(string: Self.whitespace))
                 }
-                replaceAction(self, nsRange, s)
+                block(s, nsRange, &shouldStop)
             }
         }
     }
-}
-
-extension NSAttributedString {
+    
     // default reversed
     func enumerateMatches<R: RegexComponent>(
         _ regex: R,

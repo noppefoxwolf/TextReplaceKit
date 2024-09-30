@@ -14,26 +14,25 @@ extension UITextView {
     ) {
         switch granularity {
         case .selectedLine:
-            replaceShortcodeSelectedLine(transform: transform)
+            replaceShortcodeLine(transform: transform, at: selectedTextRange?.start ?? endOfDocument)
         case .document:
             replaceShortcodeWholeDocument(transform: transform)
         }
     }
     
-    func replaceShortcodeSelectedLine(transform: ShortcodeTransform) {
-        guard let selectedTextRange else { return }
-        let selectedLineRangeStart = tokenizer.position(
-            from: selectedTextRange.start,
+    func replaceShortcodeLine(transform: ShortcodeTransform, at posision: UITextPosition) {
+        let lineRangeStart = tokenizer.position(
+            from: posision,
             toBoundary: .line,
             inDirection: .layout(.left)
         )
-        let selectedLineRangeEnd = tokenizer.position(
-            from: selectedTextRange.start,
+        let lineRangeEnd = tokenizer.position(
+            from: posision,
             toBoundary: .line,
             inDirection: .layout(.right)
         )
-        guard let selectedLineRangeStart, let selectedLineRangeEnd else { return }
-        let selectedLineRange = textRange(from: selectedLineRangeStart, to: selectedLineRangeEnd)
+        guard let lineRangeStart, let lineRangeEnd else { return }
+        let selectedLineRange = textRange(from: lineRangeStart, to: lineRangeEnd)
         guard let selectedLineRange else { return }
         replaceShortcode(in: selectedLineRange, transform: transform)
     }
@@ -45,11 +44,9 @@ extension UITextView {
     }
     
     func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform) {
-        let lineAttributedText = attributedText(in: range)
-        let newLineAttributedText = lineAttributedText.copyAsMutable()
-        newLineAttributedText.replaceShortcode(
-            with: transform,
-            replaceAction: { _,nsRange, s in
+        attributedText(in: range).enumerateShortcodes(
+            transform: transform,
+            using: { replaceAttributedString, nsRange, _ in
                 let start = position(
                     from: range.start,
                     offset: nsRange.location
@@ -61,14 +58,10 @@ extension UITextView {
                 guard let start, let end else { return }
                 let textRange = textRange(from: start, to: end)
                 if let textRange {
-                    self.apply(textRange, withAttributedText: s)
+                    replaceWithKeepingSelection(textRange, withAttributedText: replaceAttributedString)
                 }
             }
         )
-        if lineAttributedText != newLineAttributedText {
-            let newLineNSAttributedText = newLineAttributedText
-            self.workaround.replace(range, withAttributedText: newLineNSAttributedText)
-        }
     }
 }
 
@@ -101,22 +94,21 @@ extension UITextView {
 }
 
 extension UITextView {
-    func apply(_ range: UITextRange, withAttributedText attributedText: NSAttributedString) {
+    func replaceWithKeepingSelection(_ range: UITextRange, withAttributedText attributedText: NSAttributedString) {
         enum Anchor: Sendable {
             case leading
             case trailing
         }
         
-        let closestPosition = closestPosition(to: selectedTextRange!.start, within: range)
-        let isRangeContainsPosition = contains(range, to: selectedTextRange!.start)
-        let anchor = closestPosition == range.start ? Anchor.leading : Anchor.trailing
-        
         let beforeTextRange = selectedTextRange
-        replace(range, withAttributedText: attributedText)
+        workaround.replace(range, withAttributedText: attributedText)
         let afterTextRange = selectedTextRange
         
         guard let beforeTextRange, let afterTextRange else { return }
         
+        let closestPosition = closestPosition(to: beforeTextRange.start, within: range)
+        let isRangeContainsPosition = contains(range, to: beforeTextRange.start)
+        let anchor = closestPosition == range.start ? Anchor.leading : Anchor.trailing
         switch anchor {
         case .leading:
             self.selectedTextRange = beforeTextRange
@@ -136,7 +128,7 @@ extension UITextView {
     /// - Parameters:
     ///   - range: A range of text in a document.
     ///   - text: A string to replace the text in range.
-    func apply(_ range: UITextRange, withText text: String) {
-        apply(range, withAttributedText: NSAttributedString(string: text))
+    func replaceWithKeepingSelection(_ range: UITextRange, withText text: String) {
+        replaceWithKeepingSelection(range, withAttributedText: NSAttributedString(string: text))
     }
 }

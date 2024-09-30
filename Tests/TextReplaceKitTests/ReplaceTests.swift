@@ -28,6 +28,28 @@ struct TextViewReplaceSelectionTests {
     }
     
     @Test
+    func keepingSelectionWithEmoji() {
+        let textView = UITextView()
+        textView.text = "👨‍👩‍👧‍👦he Hello World !!"
+        #expect(textView.visualText == "👨‍👩‍👧‍👦he Hello World !![]")
+                
+        let offsetText = "👨‍👩‍👧‍👦he "
+        let replaceText = "Hello"
+        let withText = "👐"
+        let replaceTextRange = textView.textRange(
+            from: textView.position(from: textView.beginningOfDocument, offset: offsetText.utf16.count)!,
+            to: textView.position(from: textView.beginningOfDocument, offset: offsetText.utf16.count + replaceText.utf16.count)!
+        )!
+        #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
+        #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
+        #expect(textView.visualText(replaceTextRange) == "👨‍👩‍👧‍👦he [Hello] World !!")
+        
+        textView.apply(replaceTextRange, withText: withText)
+        
+        #expect(textView.visualText == "👨‍👩‍👧‍👦he 👐 World !![]")
+    }
+    
+    @Test
     func keepingSelectionInText() {
         let textView = UITextView()
         textView.text = "The Hello World !!"
@@ -99,8 +121,5 @@ struct TextViewReplaceSelectionTests {
         textView.selectedTextRange = textView.textRange(from: p3, to: p3)
         #expect(textView.visualText == "The Hello[] World !!")
     }
-    
-    
-
 }
 

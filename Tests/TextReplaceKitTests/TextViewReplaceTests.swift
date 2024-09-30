@@ -39,6 +39,41 @@ struct TextViewReplaceTests {
         
         #expect(textView.visualText == "1️⃣ 3️⃣[] 2️⃣")
     }
+    
+    @Test
+    func insertWholeDocument() {
+        let textView = UITextView()
+        textView.attributedText = NSAttributedString(string: ":one: :two:")
+        #expect(textView.visualText == ":one: :two:[]")
+        
+        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
+            switch shortcode.name {
+            case "one":
+                NSAttributedString(attachment: TextAttachment("1️⃣"))
+            case "two":
+                NSAttributedString(attachment: TextAttachment("2️⃣"))
+            case "three":
+                NSAttributedString(attachment: TextAttachment("3️⃣"))
+            default:
+                nil
+            }
+        }
+        textView.replaceShortcode(transform, granularity: .document)
+        
+        let position = textView.position(
+            from: textView.beginningOfDocument,
+            offset: 1
+        )!
+        let textRange = textView.textRange(from: position, to: position)
+        textView.selectedTextRange = textRange
+        #expect(textView.visualText == "1️⃣[] 2️⃣")
+        
+        textView.insertText(" :three:")
+        #expect(textView.visualText == "1️⃣ :three:[] 2️⃣")
+        textView.replaceShortcode(transform, granularity: .document)
+        
+        #expect(textView.visualText == "1️⃣ 3️⃣[] 2️⃣")
+    }
 }
 
 final class TextAttachment: NSTextAttachment {

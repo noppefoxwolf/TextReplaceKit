@@ -31,5 +31,13 @@ struct AttributedStringSpec {
         #expect(attr != mutableAttr)
         #expect(attr.string != mutableAttr.string)
     }
+    
+    @Test("絵文字のカウントは同じではない")
+    func emojiCount() {
+        let attr = NSAttributedString("👨‍👩‍👧‍👦")
+        #expect(attr.length == 11)
+        #expect(attr.toModern().characters.count == 1)
+        #expect(attr.string.count == 1)
+    }
 }
 

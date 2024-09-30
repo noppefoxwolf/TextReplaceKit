@@ -58,7 +58,10 @@ extension UITextView {
                 guard let start, let end else { return }
                 let textRange = textRange(from: start, to: end)
                 if let textRange {
-                    replaceWithKeepingSelection(textRange, withAttributedText: replaceAttributedString)
+                    performEditingTransaction {
+                        workaround.replace(textRange, withAttributedText: replaceAttributedString)
+                        return textRange
+                    }
                 }
             }
         )
@@ -94,21 +97,21 @@ extension UITextView {
 }
 
 extension UITextView {
-    func replaceWithKeepingSelection(_ range: UITextRange, withAttributedText attributedText: NSAttributedString) {
+    func performEditingTransaction(_ transaction: () -> UITextRange) {
         enum Anchor: Sendable {
             case leading
             case trailing
         }
         
         let beforeTextRange = selectedTextRange
-        workaround.replace(range, withAttributedText: attributedText)
+        let changedRange = transaction()
         let afterTextRange = selectedTextRange
         
         guard let beforeTextRange, let afterTextRange else { return }
         
-        let closestPosition = closestPosition(to: beforeTextRange.start, within: range)
-        let isRangeContainsPosition = contains(range, to: beforeTextRange.start)
-        let anchor = closestPosition == range.start ? Anchor.leading : Anchor.trailing
+        let closestPosition = closestPosition(to: beforeTextRange.start, within: changedRange)
+        let isRangeContainsPosition = contains(changedRange, to: beforeTextRange.start)
+        let anchor = closestPosition == changedRange.start ? Anchor.leading : Anchor.trailing
         switch anchor {
         case .leading:
             self.selectedTextRange = beforeTextRange
@@ -122,13 +125,5 @@ extension UITextView {
                 selectedTextRange = fixedTextRange
             }
         }
-    }
-    
-    /// Replaces the text in a document that is in the specified range And fixs selection offset.
-    /// - Parameters:
-    ///   - range: A range of text in a document.
-    ///   - text: A string to replace the text in range.
-    func replaceWithKeepingSelection(_ range: UITextRange, withText text: String) {
-        replaceWithKeepingSelection(range, withAttributedText: NSAttributedString(string: text))
     }
 }

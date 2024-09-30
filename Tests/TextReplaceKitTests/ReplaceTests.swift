@@ -12,7 +12,7 @@ struct TextViewReplaceSelectionTests {
         let textView = UITextView()
         textView.text = "The Hello World !!"
         #expect(textView.visualText == "The Hello World !![]")
-                
+        
         let replaceText = "Hello"
         let withText = "👐"
         let replaceTextRange = textView.textRange(
@@ -22,7 +22,10 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         
-        textView.apply(replaceTextRange, withText: withText)
+        textView.performEditingTransaction {
+            textView.replace(replaceTextRange, withText: withText)
+            return replaceTextRange
+        }
         
         #expect(textView.visualText == "The 👐 World !![]")
     }
@@ -32,7 +35,7 @@ struct TextViewReplaceSelectionTests {
         let textView = UITextView()
         textView.text = "👨‍👩‍👧‍👦he Hello World !!"
         #expect(textView.visualText == "👨‍👩‍👧‍👦he Hello World !![]")
-                
+        
         let offsetText = "👨‍👩‍👧‍👦he "
         let replaceText = "Hello"
         let withText = "👐"
@@ -44,7 +47,10 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         #expect(textView.visualText(replaceTextRange) == "👨‍👩‍👧‍👦he [Hello] World !!")
         
-        textView.apply(replaceTextRange, withText: withText)
+        textView.performEditingTransaction {
+            textView.replace(replaceTextRange, withText: withText)
+            return replaceTextRange
+        }
         
         #expect(textView.visualText == "👨‍👩‍👧‍👦he 👐 World !![]")
     }
@@ -57,7 +63,7 @@ struct TextViewReplaceSelectionTests {
         
         textView.selectedRange = NSRange(location: 6, length: 0)
         #expect(textView.visualText == "The He[]llo World !!")
-                
+        
         let replaceText = "Hello"
         let withText = "👐"
         let replaceTextRange = textView.textRange(
@@ -67,7 +73,10 @@ struct TextViewReplaceSelectionTests {
         #expect(textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         
-        textView.apply(replaceTextRange, withText: withText)
+        textView.performEditingTransaction {
+            textView.replace(replaceTextRange, withText: withText)
+            return replaceTextRange
+        }
         
         #expect(textView.visualText == "The 👐[] World !!")
     }
@@ -80,7 +89,7 @@ struct TextViewReplaceSelectionTests {
         
         textView.selectedRange = NSRange(location: 0, length: 0)
         #expect(textView.visualText == "[]The Hello World !!")
-                
+        
         let replaceText = "Hello"
         let withText = "👐"
         let replaceTextRange = textView.textRange(
@@ -90,7 +99,10 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         
-        textView.apply(replaceTextRange, withText: withText)
+        textView.performEditingTransaction {
+            textView.replace(replaceTextRange, withText: withText)
+            return replaceTextRange
+        }
         
         #expect(textView.visualText == "[]The 👐 World !!")
     }

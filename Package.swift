@@ -4,21 +4,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "TextReplaceKit",
-    platforms: [.iOS(.v16)],
-    products: [
-        .library(
-            name: "TextReplaceKit",
-            targets: ["TextReplaceKit"]
-        ),
-    ],
-    targets: [
-        .target(
-            name: "TextReplaceKit"
-        ),
-        .testTarget(
-            name: "TextReplaceKitTests",
-            dependencies: ["TextReplaceKit"]
-        ),
-    ]
+  name: "TextReplaceKit",
+  platforms: [.iOS(.v16)],
+  products: [
+    .library(
+      name: "TextReplaceKit",
+      targets: ["TextReplaceKit"]
+    )
+  ],
+  targets: [
+    .target(
+      name: "TextReplaceKit"
+    ),
+    .testTarget(
+      name: "TextReplaceKitTests",
+      dependencies: ["TextReplaceKit"]
+    ),
+  ]
 )

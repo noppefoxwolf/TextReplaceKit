@@ -1,5 +1,13 @@
 import Foundation
 
+extension NSMutableAttributedString {
+    public func replaceShortcode(with transform: ShortcodeTransform) {
+        enumerateShortcodes(transform: transform) { replaceAttributedString, range, _ in
+            replaceCharacters(in: range, with: replaceAttributedString)
+        }
+    }
+}
+
 extension NSAttributedString {
     public static let whitespace = " "
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?

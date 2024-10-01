@@ -35,9 +35,9 @@ extension UITextView {
             inDirection: .layout(.right)
         )
         guard let lineRangeStart, let lineRangeEnd else { return }
-        let selectedLineRange = textRange(from: lineRangeStart, to: lineRangeEnd)
-        guard let selectedLineRange else { return }
-        replaceShortcode(in: selectedLineRange, transform: transform)
+        let lineRange = textRange(from: lineRangeStart, to: lineRangeEnd)
+        guard let lineRange else { return }
+        replaceShortcode(in: lineRange, transform: transform)
     }
 
     func replaceShortcodeWholeDocument(transform: ShortcodeTransform) {

@@ -63,7 +63,7 @@ extension UITextView {
                     let textRange = textRange(from: start, to: end)
                     if let textRange {
                         performEditingTransaction {
-                            workaround.replace(
+                            workaround.silentReplace(
                                 textRange,
                                 withAttributedText: replaceAttributedString
                             )
@@ -72,6 +72,7 @@ extension UITextView {
                     }
                 }
             )
+        delegate?.textViewDidChange?(self)
     }
 }
 

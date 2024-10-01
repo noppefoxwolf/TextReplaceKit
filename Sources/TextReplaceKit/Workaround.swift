@@ -14,19 +14,22 @@ extension UITextView {
 }
 
 extension Workaround {
-    /// https://developer.apple.com/documentation/uikit/uitextinput/4462768-replace
-    /// Before iOS18, UITextView don't implemented replace(range:withAttributedText:).
-    /// Addition note 001
-    ///     - iOS18 replace(withAttributedText:) sometimes
-    ///     `Thread 1: "-[NSNull _defaultLineHeightForUILayout]: unrecognized selector sent to instance 0x1e007fa58"`
+    /// silentReplace don't call delegates
     @MainActor
-    func replace(
+    func silentReplace(
         _ range: UITextRange,
         withAttributedText attributedText: NSAttributedString
     ) {
+        let textViewAttr = base.attributedText.copyAsMutable()
+        let location = base.offset(from: base.beginningOfDocument, to: range.start)
+        let length = base.offset(from: range.start, to: range.end)
+        let nsRange = NSRange(location: location, length: length)
+        textViewAttr.replaceCharacters(in: nsRange, with: attributedText)
+        base.attributedText = textViewAttr
         
+        if let endedPosition = base.position(from: range.start, offset: attributedText.length) {
+            base.selectedTextRange = base.textRange(from: endedPosition, to: endedPosition)
+        }
         
-        base.replace(range, withText: "")
-        base.insertAttributedText(attributedText)
     }
 }

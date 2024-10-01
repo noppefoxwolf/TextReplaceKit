@@ -117,6 +117,27 @@ struct TextViewReplaceTests {
         #expect(textView.visualText == "🐈 :blobcat:test 🐈 🐈[]")
         #expect(watcher.didChange == 1)
     }
+    
+    @Test
+    func notCalledAnyChanges() {
+        class Watcher: NSObject, UITextViewDelegate {
+            var didChange: Int = 0
+            
+            func textViewDidChange(_ textView: UITextView) {
+                didChange += 1
+            }
+        }
+        let watcher = Watcher()
+        let textView = UITextView()
+        textView.delegate = watcher
+        textView.text = ":blobcat: :blobcat:test :blobcat: :blobcat:"
+        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
+            nil
+        }
+        textView.replaceShortcode(transform, granularity: .selectedLine)
+        #expect(textView.visualText == ":blobcat: :blobcat:test :blobcat: :blobcat:[]")
+        #expect(watcher.didChange == 0)
+    }
 }
 
 final class TextAttachment: NSTextAttachment {

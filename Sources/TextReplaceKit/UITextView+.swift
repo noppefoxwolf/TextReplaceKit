@@ -47,6 +47,7 @@ extension UITextView {
     }
 
     func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform) {
+        var didChanged: Bool = false
         attributedText(in: range)
             .enumerateShortcodes(
                 transform: transform,
@@ -69,10 +70,13 @@ extension UITextView {
                             )
                             return textRange
                         }
+                        didChanged = true
                     }
                 }
             )
-        delegate?.textViewDidChange?(self)
+        if didChanged {
+            delegate?.textViewDidChange?(self)
+        }
     }
 }
 

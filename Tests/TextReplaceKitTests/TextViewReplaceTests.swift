@@ -149,8 +149,7 @@ struct TextViewReplaceTests {
         #expect(textView.visualText == ":one: :two:[]")
 
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
-            print(textView.font)
-            return switch shortcode.name {
+            switch shortcode.name {
             case "one":
                 NSAttributedString(attachment: TextAttachment("1️⃣"), attributes: [.font : textView.font as Any])
             case "two":
@@ -182,43 +181,46 @@ struct TextViewReplaceTests {
     @available(iOS 18.0, *)
     @Test
     func workaorundDefaultLineHeightForUILayoutBug() {
-        let defaultFont = UIFont.boldSystemFont(ofSize: 100)
         let textView = UITextView()
-        textView.font = defaultFont
-        textView.attributedText = NSAttributedString(string: ":one: :two:", attributes: [.font : defaultFont as Any])
+        textView.font = UIFont.boldSystemFont(ofSize: 100)
+        textView.attributedText = NSAttributedString(string: ":one: :two:", attributes: textView.typingAttributes)
+        #expect(textView.font != nil)
         #expect(textView.visualText == ":one: :two:[]")
-
+        print(textView.attributedText)
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             switch shortcode.name {
             case "one":
-                NSAttributedString(attachment: TextAttachment("1️⃣"), attributes: [.font : defaultFont as Any])
+                NSAttributedString(attachment: TextAttachment("1️⃣"), attributes: textView.typingAttributes)
             case "two":
-                NSAttributedString(attachment: TextAttachment("2️⃣"), attributes: [.font : defaultFont as Any])
+                NSAttributedString(attachment: TextAttachment("2️⃣"), attributes: textView.typingAttributes)
             case "three":
-                NSAttributedString(attachment: TextAttachment("3️⃣"), attributes: [.font : defaultFont as Any])
+                NSAttributedString(attachment: TextAttachment("3️⃣"), attributes: textView.typingAttributes)
             default:
                 nil
             }
         }
         textView.replaceShortcode(transform, granularity: .document)
-
+        #expect(textView.font != nil)
+        print(textView.attributedText)
         let position = textView.position(
             from: textView.beginningOfDocument,
             offset: 2
         )!
         let textRange = textView.textRange(from: position, to: position)
         textView.selectedTextRange = textRange
+        #expect(textView.font != nil)
         #expect(textView.visualText == "1️⃣ []2️⃣")
-
+        
+        #expect(textView.font != nil)
         // Thread 1: "-[NSNull _defaultLineHeightForUILayout]: unrecognized selector sent to instance 0x1e007fa58"
-        textView.font = defaultFont
         textView.insertText(":three:")
+        #expect(textView.font != nil)
+        
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
         textView.replaceShortcode(transform, granularity: .document)
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
         
-        print(textView.attributedText)
         let range = NSRange(location: 3, length: 5)
         var foundedFont: UIFont? = nil
         textView.attributedText.enumerateAttribute(.font, in: range) { font, range, _ in

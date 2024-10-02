@@ -23,10 +23,10 @@ extension NSAttributedString {
             let chunk = decoder.decode(chunkText)
             if let chunk, let s = transform(chunk.shortcode)?.copyAsMutable() {
                 if chunk.hasPrefixWhiteSpace {
-                    s.insert(NSAttributedString(string: Self.whitespace), at: 0)
+                    s.insert(Self.whitespace, at: 0)
                 }
                 if chunk.hasSuffixWhiteSpace {
-                    s.append(NSAttributedString(string: Self.whitespace))
+                    s.append(Self.whitespace)
                 }
                 block(s, nsRange, &shouldStop)
             }
@@ -67,5 +67,19 @@ extension AttributedString {
 
     var string: String {
         String(characters)
+    }
+}
+
+extension NSMutableAttributedString {
+    func insert(_ string: String, at index: Int) {
+        let attributes = attributes(at: 0, effectiveRange: nil)
+        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
+        insert(newAttributedString, at: index)
+    }
+    
+    func append(_ string: String) {
+        let attributes = attributes(at: 0, effectiveRange: nil)
+        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
+        append(newAttributedString)
     }
 }

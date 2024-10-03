@@ -2,8 +2,8 @@ import Foundation
 
 extension NSMutableAttributedString {
     public func replaceShortcode(with transform: ShortcodeTransform) {
-        enumerateShortcodes(transform: transform) { replaceAttributedString, range, _ in
-            replaceCharacters(in: range, with: replaceAttributedString)
+        enumerateShortcodes(transform: transform) { statement, range, _ in
+            replaceCharacters(in: range, with: statement.attributedText)
         }
     }
 }
@@ -15,20 +15,21 @@ extension NSAttributedString {
     func enumerateShortcodes(
         decoder: ShortcodeChunkDecoder = ShortcodeChunkDecoder(),
         transform: (Shortcode) -> NSAttributedString?,
-        using block: (NSAttributedString, NSRange, inout Bool) -> Void
+        using block: (AttributedStatement, NSRange, inout Bool) -> Void
     ) {
         let regex = Regex.shortcodeWithPadding
         enumerateMatches(regex) { substring, nsRange, shouldStop in
             let chunkText = String(substring)
             let chunk = decoder.decode(chunkText)
-            if let chunk, let s = transform(chunk.shortcode)?.copyAsMutable() {
+            if let chunk, let s = transform(chunk.shortcode) {
+                let statement = AttributedStatement(bodyAttributedText: s)
                 if chunk.hasPrefixWhiteSpace {
-                    s.insert(Self.whitespace, at: 0)
+                    statement.leadingAttributedText = NSAttributedString(string: Self.whitespace)
                 }
                 if chunk.hasSuffixWhiteSpace {
-                    s.append(Self.whitespace)
+                    statement.trailingAttributedText = NSAttributedString(string: Self.whitespace)
                 }
-                block(s, nsRange, &shouldStop)
+                block(statement, nsRange, &shouldStop)
             }
         }
     }
@@ -57,6 +58,10 @@ extension NSAttributedString {
 
     func toModern() -> AttributedString {
         AttributedString(self)
+    }
+    
+    var range: NSRange {
+        NSRange(location: 0, length: length)
     }
 }
 

@@ -51,7 +51,7 @@ extension UITextView {
         attributedText(in: range)
             .enumerateShortcodes(
                 transform: transform,
-                using: { replaceAttributedString, nsRange, _ in
+                using: { statement, nsRange, _ in
                     let start = position(
                         from: range.start,
                         offset: nsRange.location
@@ -66,7 +66,7 @@ extension UITextView {
                         performEditingTransaction {
                             workaround.silentReplace(
                                 textRange,
-                                withAttributedText: replaceAttributedString
+                                withAttributedText: statement.attributedText
                             )
                             return textRange
                         }

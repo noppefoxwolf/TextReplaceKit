@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import Testing
-
 @testable import TextReplaceKit
 
 @Suite

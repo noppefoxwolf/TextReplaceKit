@@ -9,12 +9,27 @@ let package = Package(
     products: [
         .library(
             name: "TextReplaceKit",
-            targets: ["TextReplaceKit"]
+            targets: [
+                "TextReplaceKit",
+                "ShortcodeReplace",
+            ]
         )
     ],
     targets: [
         .target(
-            name: "TextReplaceKit"
+            name: "TextReplaceKit",
+            dependencies: [
+                "ShortcodeReplace"
+            ]
+        ),
+        .target(
+            name: "ShortcodeReplace",
+            dependencies: [
+                "Extensions"
+            ]
+        ),
+        .target(
+            name: "Extensions"
         ),
         .testTarget(
             name: "TextReplaceKitTests",

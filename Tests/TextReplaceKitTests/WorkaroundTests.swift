@@ -14,7 +14,7 @@ struct WorkaroundTests {
             from: textView.beginningOfDocument,
             to: textView.endOfDocument
         )!
-        textView.workaround.silentReplace(
+        textView.silentReplace(
             textRange,
             withAttributedText: NSAttributedString(string: "Replaced")
         )

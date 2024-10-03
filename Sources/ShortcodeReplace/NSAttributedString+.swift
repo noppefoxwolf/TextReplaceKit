@@ -1,4 +1,5 @@
 import Foundation
+import Extensions
 
 extension NSMutableAttributedString {
     public func replaceShortcode(with transform: ShortcodeTransform) {
@@ -19,8 +20,7 @@ extension NSAttributedString {
     ) {
         let regex = Regex.shortcodeWithPadding
         enumerateMatches(regex) { substring, nsRange, shouldStop in
-            let chunkText = String(substring)
-            let chunk = decoder.decode(chunkText)
+            let chunk = decoder.decode(substring)
             if let chunk, let s = transform(chunk.shortcode) {
                 let statement = AttributedStatement(bodyAttributedText: s)
                 if chunk.hasPrefixWhiteSpace {
@@ -48,43 +48,5 @@ extension NSAttributedString {
                 break
             }
         }
-    }
-}
-
-extension NSAttributedString {
-    func copyAsMutable() -> NSMutableAttributedString {
-        NSMutableAttributedString(attributedString: self)
-    }
-
-    func toModern() -> AttributedString {
-        AttributedString(self)
-    }
-    
-    var range: NSRange {
-        NSRange(location: 0, length: length)
-    }
-}
-
-extension AttributedString {
-    func toFoundation() -> NSAttributedString {
-        NSAttributedString(self)
-    }
-
-    var string: String {
-        String(characters)
-    }
-}
-
-extension NSMutableAttributedString {
-    func insert(_ string: String, at index: Int) {
-        let attributes = attributes(at: 0, effectiveRange: nil)
-        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
-        insert(newAttributedString, at: index)
-    }
-    
-    func append(_ string: String) {
-        let attributes = attributes(at: 0, effectiveRange: nil)
-        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
-        append(newAttributedString)
     }
 }

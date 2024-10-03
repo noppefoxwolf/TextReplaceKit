@@ -15,7 +15,7 @@ public struct ShortcodeChunk: Sendable {
 public struct ShortcodeChunkDecoder {
     public init() {}
 
-    public func decode(_ text: String) -> ShortcodeChunk? {
+    public func decode(_ text: Substring) -> ShortcodeChunk? {
         let hasPrefixWhiteSpaceReference = Reference<Bool>()
         let hasSuffixWhiteSpaceReference = Reference<Bool>()
         let shortcodeReference = Reference<Substring>()

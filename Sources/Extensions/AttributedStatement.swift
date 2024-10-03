@@ -1,15 +1,15 @@
 import Foundation
 
-final class AttributedStatement {
-    var leadingAttributedText: NSAttributedString?
-    let bodyAttributedText: NSAttributedString
-    var trailingAttributedText: NSAttributedString?
+package final class AttributedStatement {
+    package var leadingAttributedText: NSAttributedString?
+    package let bodyAttributedText: NSAttributedString
+    package var trailingAttributedText: NSAttributedString?
     
-    init(bodyAttributedText: NSAttributedString) {
+    package init(bodyAttributedText: NSAttributedString) {
         self.bodyAttributedText = bodyAttributedText
     }
     
-    var attributedText: NSAttributedString {
+    package var attributedText: NSAttributedString {
         let attributedText = NSMutableAttributedString()
         if let leadingAttributedText {
             attributedText.append(leadingAttributedText)

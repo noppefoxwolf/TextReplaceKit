@@ -186,7 +186,6 @@ struct TextViewReplaceTests {
         textView.attributedText = NSAttributedString(string: ":one: :two:", attributes: textView.typingAttributes)
         #expect(textView.font != nil)
         #expect(textView.visualText == ":one: :two:[]")
-        print(textView.attributedText)
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             switch shortcode.name {
             case "one":
@@ -201,7 +200,6 @@ struct TextViewReplaceTests {
         }
         textView.replaceShortcode(transform, granularity: .document)
         #expect(textView.font != nil)
-        print(textView.attributedText)
         let position = textView.position(
             from: textView.beginningOfDocument,
             offset: 2
@@ -227,6 +225,54 @@ struct TextViewReplaceTests {
             foundedFont = font as? UIFont
         }
         #expect(foundedFont != nil)
+    }
+    
+    @Test
+    func alreadyReplacedAttributedString() {
+        let textView = UITextView()
+        textView.attributedText = NSAttributedString(string: ":one: :two:")
+        #expect(textView.visualText == ":one: :two:[]")
+
+        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
+            switch shortcode.name {
+            case "one":
+                NSAttributedString(attachment: TextAttachment("1️⃣"))
+            case "two":
+                NSAttributedString(attachment: TextAttachment("2️⃣"))
+            case "three":
+                NSAttributedString(attachment: TextAttachment("3️⃣"))
+            default:
+                nil
+            }
+        }
+        textView.replaceShortcode(transform, granularity: .selectedLine)
+
+        let position = textView.position(
+            from: textView.beginningOfDocument,
+            offset: 1
+        )!
+        let textRange = textView.textRange(from: position, to: position)
+        textView.selectedTextRange = textRange
+        #expect(textView.visualText == "1️⃣[] 2️⃣")
+
+        textView.insertText(":three:")
+        #expect(textView.visualText == "1️⃣:three:[] 2️⃣")
+        textView.replaceShortcode(transform, granularity: .selectedLine)
+        
+        #expect(textView.visualText == ":one::three:[] 2️⃣")
+    }
+}
+
+open class CodableTextAttachment: NSTextAttachment {
+    public var rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+        super.init(data: nil, ofType: nil)
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

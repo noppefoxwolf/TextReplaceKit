@@ -52,4 +52,13 @@ struct AttributedStringSpec {
         attr.replaceCharacters(in: NSRange(location: 8, length: 3), with: NSAttributedString("baz"))
         #expect(attr.attribute(.font, at: 4, effectiveRange: nil) != nil)
     }
+    
+    @Test
+    func findAttachmentUsingSpecialChar() async throws {
+        let attr = NSMutableAttributedString(string: "foo")
+        attr.append(NSAttributedString(attachment: TextAttachment("🐈")))
+        attr.append("baz")
+        let attachmentCharacter = Character(Unicode.Scalar(NSTextAttachment.character)!)
+        #expect(attr.string == "foo\(attachmentCharacter)baz")
+    }
 }

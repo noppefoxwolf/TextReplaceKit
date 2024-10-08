@@ -76,7 +76,8 @@ extension UITextView {
 
         let closestPosition = closestPosition(to: beforeTextRange.start, within: changedRange)
         let isRangeContainsPosition = contains(changedRange, to: beforeTextRange.start)
-        let anchor = closestPosition == changedRange.start ? Anchor.leading : Anchor.trailing
+        
+        let anchor: Anchor = closestPosition == changedRange.start ? Anchor.leading : Anchor.trailing
         switch anchor {
         case .leading:
             self.selectedTextRange = beforeTextRange

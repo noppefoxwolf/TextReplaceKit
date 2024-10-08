@@ -7,7 +7,7 @@ import UIKit
 @Suite
 struct TextViewReplaceTests {
     @Test
-    func insert() {
+    func replaceShortcode() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")
         #expect(textView.visualText == ":one: :two:[]")
@@ -42,7 +42,7 @@ struct TextViewReplaceTests {
     }
 
     @Test
-    func insertWholeDocument() {
+    func replaceShortcodeWholeDocument() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")
         #expect(textView.visualText == ":one: :two:[]")

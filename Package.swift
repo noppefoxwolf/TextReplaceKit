@@ -19,11 +19,18 @@ let package = Package(
         .target(
             name: "TextReplaceKit",
             dependencies: [
-                "ShortcodeReplace"
+                "ShortcodeReplace",
+                "PaddingInsert",
             ]
         ),
         .target(
             name: "ShortcodeReplace",
+            dependencies: [
+                "Extensions"
+            ]
+        ),
+        .target(
+            name: "PaddingInsert",
             dependencies: [
                 "Extensions"
             ]

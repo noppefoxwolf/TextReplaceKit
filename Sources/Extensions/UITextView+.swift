@@ -83,19 +83,21 @@ extension UITextView {
         replaceAndAdjutSelectedTextRange(range, withAttributedText: NSAttributedString(string: text))
     }
     
-    package func replaceAndAdjutSelectedTextRange(_ range: UITextRange, withAttributedText attr: NSAttributedString) {
-        let beforeSelectedTextRange = selectedTextRange!
+    package func replaceAndAdjutSelectedTextRange(_ textRange: UITextRange, withAttributedText attributedText: NSAttributedString) {
+        let beforeSelectedTextRange = selectedTextRange
         let beforeTypingAttributes = typingAttributes
         
-        let mattr = attributedText.copyAsMutable()
-        let nsRange = NSRange(range, in: self)
-        mattr.replaceCharacters(in: nsRange, with: attr)
-        self.attributedText = mattr
+        let mutableAttributedText = self.attributedText.copyAsMutable()
+        let nsRange = NSRange(textRange, in: self)
+        mutableAttributedText.replaceCharacters(in: nsRange, with: attributedText)
+        self.attributedText = mutableAttributedText
         self.typingAttributes = beforeTypingAttributes
         
-        let changedRange = textRange(from: range.start, for: attr.range)!
+        let changedTextRange = self.textRange(from: textRange.start, for: attributedText.range)
         
-        self.selectedTextRange = adjustedTextRange(beforeSelectedTextRange, replacingRange: range, replacedRange: changedRange)
+        if let beforeSelectedTextRange, let changedTextRange {
+            self.selectedTextRange = adjustedTextRange(beforeSelectedTextRange, replacingRange: textRange, replacedRange: changedTextRange)
+        }
     }
     
     func adjustedTextRange(

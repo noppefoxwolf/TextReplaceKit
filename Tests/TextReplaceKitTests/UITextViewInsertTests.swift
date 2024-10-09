@@ -22,18 +22,8 @@ extension UITextView {
     }
     
     func insertText(_ text: String, at position: UITextPosition) {
-        let from = position
-        let to = self.position(from: position, offset: text.utf16.count)!
-        let range = textRange(from: to, to: to)!
-        //insertText(text)
-        let mattr = attributedText.copyAsMutable()
-        
-        let locationStart = self.offset(from: self.beginningOfDocument, to: from)
-        let locationEnd = self.offset(from: self.beginningOfDocument, to: from)
-        let nsRange = NSRange(location: locationStart, length: locationEnd - locationStart)
-        mattr.replaceCharacters(in: nsRange, with: text)
-        self.attributedText = mattr
-        self.selectedTextRange = range
+        let range = textRange(from: position, to: position)!
+        replaceAndAdjutSelectedTextRange(range, withText: text)
     }
     
     func appendText(_ text: String) {

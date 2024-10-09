@@ -21,10 +21,17 @@ let package = Package(
             dependencies: [
                 "ShortcodeReplace",
                 "PaddingInsert",
+                "AttachmentReplace",
             ]
         ),
         .target(
             name: "ShortcodeReplace",
+            dependencies: [
+                "Extensions"
+            ]
+        ),
+        .target(
+            name: "AttachmentReplace",
             dependencies: [
                 "Extensions"
             ]

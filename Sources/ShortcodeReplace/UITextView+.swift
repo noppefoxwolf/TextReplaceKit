@@ -55,13 +55,10 @@ extension UITextView {
                 using: { statement, nsRange, _ in
                     let textRange = textRange(from: range.start, for: nsRange)
                     if let textRange {
-                        performEditingTransaction {
-                            silentReplace(
-                                textRange,
-                                withAttributedText: statement.attributedText
-                            )
-                            return textRange
-                        }
+                        replaceAndAdjutSelectedTextRange(
+                            textRange,
+                            withAttributedText: statement.attributedText
+                        )
                         didChanged = true
                     }
                 }

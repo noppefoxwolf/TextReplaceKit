@@ -14,10 +14,7 @@ extension UITextView {
                 if let attachment = attachment as? NSTextAttachment, let transformed = transform(attachment) {
                     let textRange = textRange(from: beginningOfDocument, for: range)
                     if let textRange {
-                        performEditingTransaction {
-                            silentReplace(textRange, withAttributedText: transformed)
-                            return textRange
-                        }
+                        replaceAndAdjutSelectedTextRange(textRange, withAttributedText: transformed)
                         didChanged = true
                     }
                 }

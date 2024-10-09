@@ -79,9 +79,12 @@ extension UITextView {
 }
 
 extension UITextView {
-    package func replace2(range: UITextRange, withAttributedText attr: NSAttributedString) {
-        let bs = selectedTextRange!.start
-        let be = selectedTextRange!.end
+    package func replaceAndAdjutSelectedTextRange(_ range: UITextRange, withText text: String) {
+        replaceAndAdjutSelectedTextRange(range, withAttributedText: NSAttributedString(string: text))
+    }
+    
+    package func replaceAndAdjutSelectedTextRange(_ range: UITextRange, withAttributedText attr: NSAttributedString) {
+        let beforeSelectedTextRange = selectedTextRange!
         
         let mattr = attributedText.copyAsMutable()
         let nsRange = NSRange(range, in: self)
@@ -90,77 +93,39 @@ extension UITextView {
         
         let changedRange = textRange(from: range.start, for: attr.range)!
         
-        let startPosition: UITextPosition
-        switch compare(range.end, to: bs) {
-        case .orderedAscending: //endより右
-            let offset = offset(from: range.end, to: bs)
-            startPosition = position(from: changedRange.end, offset: offset)!
-        case .orderedDescending: //endより左
-            switch compare(range.start, to: bs) {
-            case .orderedAscending:
-                startPosition = changedRange.end
-            default:
-                startPosition = bs
-            }
-        case .orderedSame:
-            let offset = offset(from: range.end, to: bs)
-            startPosition = position(from: changedRange.end, offset: offset)!
-        }
-        
-        let endPosition: UITextPosition
-        switch compare(range.end, to: be) {
-        case .orderedAscending: //endより右
-            let offset = offset(from: range.end, to: be)
-            endPosition = position(from: changedRange.end, offset: offset)!
-        case .orderedDescending: //endより左
-            switch compare(range.start, to: be) {
-            case .orderedAscending:
-                endPosition = changedRange.end
-            default:
-                endPosition = be
-            }
-        case .orderedSame:
-            let offset = offset(from: range.end, to: be)
-            endPosition = position(from: changedRange.end, offset: offset)!
-        }
-        
-        self.selectedTextRange = textRange(
-            from: startPosition,
-            to: endPosition
-        )!
+        self.selectedTextRange = adjustedTextRange(beforeSelectedTextRange, replacingRange: range, replacedRange: changedRange)
     }
     
-    package func performEditingTransaction(_ transaction: () -> UITextRange) {
-        enum Anchor: Sendable {
-            case leading
-            case trailing
-        }
-        
-        let beforeTextRange = selectedTextRange
-        let changedRange = transaction()
-        let afterTextRange = selectedTextRange
-
-        guard let beforeTextRange, let afterTextRange else { return }
-
-        let closestPosition = closestPosition(to: beforeTextRange.start, within: changedRange)
-        let isRangeContainsPosition = contains(changedRange, to: beforeTextRange.start)
-        
-        let anchor: Anchor = closestPosition == changedRange.start ? Anchor.leading : Anchor.trailing
-        switch anchor {
-        case .leading:
-            self.selectedTextRange = beforeTextRange
-        case .trailing:
-            let offset = offset(
-                from: closestPosition,
-                to: isRangeContainsPosition ? closestPosition : beforeTextRange.start
-            )
-            let from = position(from: afterTextRange.start, offset: offset)
-            let to = position(from: afterTextRange.end, offset: offset)
-            guard let from, let to else { return }
-            let fixedTextRange = textRange(from: from, to: to)
-            if let fixedTextRange {
-                selectedTextRange = fixedTextRange
+    func adjustedTextRange(
+        _ range: UITextRange,
+        replacingRange: UITextRange,
+        replacedRange: UITextRange
+    ) -> UITextRange? {
+        let from = adjustedPosition(range.start, replacingRange: replacingRange, replacedRange: replacedRange)
+        let to = adjustedPosition(range.end, replacingRange: replacingRange, replacedRange: replacedRange)
+        guard let from, let to else { return nil }
+        return textRange(from: from, to: to)
+    }
+    
+    func adjustedPosition(
+        _ position: UITextPosition,
+        replacingRange: UITextRange,
+        replacedRange: UITextRange
+    ) -> UITextPosition? {
+        switch compare(replacingRange.end, to: position) {
+        case .orderedAscending:
+            let offset = offset(from: replacingRange.end, to: position)
+            return self.position(from: replacedRange.end, offset: offset)
+        case .orderedDescending:
+            switch compare(replacingRange.start, to: position) {
+            case .orderedAscending:
+                return replacedRange.end
+            default:
+                return position
             }
+        case .orderedSame:
+            let offset = offset(from: replacingRange.end, to: position)
+            return self.position(from: replacedRange.end, offset: offset)
         }
     }
 }

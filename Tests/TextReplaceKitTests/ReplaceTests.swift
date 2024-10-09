@@ -26,10 +26,7 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.performEditingTransaction {
-            textView.replace(replaceTextRange, withText: withText)
-            return replaceTextRange
-        }
+        textView.replaceAndAdjutSelectedTextRange(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "The 👐 World !![]")
     }
@@ -57,10 +54,7 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         #expect(textView.visualText(replaceTextRange) == "👨‍👩‍👧‍👦he [Hello] World !!")
 
-        textView.performEditingTransaction {
-            textView.replace(replaceTextRange, withText: withText)
-            return replaceTextRange
-        }
+        textView.replaceAndAdjutSelectedTextRange(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "👨‍👩‍👧‍👦he 👐 World !![]")
     }
@@ -86,10 +80,7 @@ struct TextViewReplaceSelectionTests {
         #expect(textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.performEditingTransaction {
-            textView.replace(replaceTextRange, withText: withText)
-            return replaceTextRange
-        }
+        textView.replaceAndAdjutSelectedTextRange(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "The 👐[] World !!")
     }
@@ -115,10 +106,7 @@ struct TextViewReplaceSelectionTests {
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.performEditingTransaction {
-            textView.replace(replaceTextRange, withText: withText)
-            return replaceTextRange
-        }
+        textView.replaceAndAdjutSelectedTextRange(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "[]The 👐 World !!")
     }

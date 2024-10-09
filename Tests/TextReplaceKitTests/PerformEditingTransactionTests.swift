@@ -4,14 +4,14 @@ import UIKit
 
 @MainActor
 @Suite("文字数が減るケース")
-struct PerformEditingTransactionTests {
+struct ReplaceAndAdjutSelectedTextRangeTests {
     @Test("[]:emoji: -> []🐈")
     func replace() async throws {
         let textView = UITextView()
         textView.text = ":emoji:"
         textView.selectedRange = NSRange(location: 0, length: 0)
         #expect(textView.visualText == "[]:emoji:")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange(textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "[]🐈")
     }
     
@@ -21,7 +21,7 @@ struct PerformEditingTransactionTests {
         textView.text = ":emoji:"
         textView.selectedRange = NSRange(location: 7, length: 0)
         #expect(textView.visualText == ":emoji:[]")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "🐈[]")
     }
     
@@ -31,7 +31,7 @@ struct PerformEditingTransactionTests {
         textView.text = ":emoji:"
         textView.selectedRange = NSRange(location: 4, length: 0)
         #expect(textView.visualText == ":emo[]ji:")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "🐈[]")
     }
     
@@ -41,7 +41,7 @@ struct PerformEditingTransactionTests {
         textView.text = ":emoji:"
         textView.selectedRange = NSRange(location: 3, length: 2)
         #expect(textView.visualText == ":em[oj]i:")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "🐈[]")
     }
     
@@ -51,7 +51,7 @@ struct PerformEditingTransactionTests {
         textView.text = ":emoji:"
         textView.selectedRange = NSRange(location: 4, length: 3)
         #expect(textView.visualText == ":emo[ji:]")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "🐈[]")
     }
     
@@ -61,7 +61,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 4, length: 12)
         #expect(textView.visualText == "head[er:emoji:foo]ter")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
         #expect(textView.visualText == "head[er🐈foo]ter")
     }
     
@@ -71,7 +71,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 13, length: 6)
         #expect(textView.visualText == "header:emoji:[footer]")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "header🐈[footer]")
     }
@@ -82,7 +82,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 2, length: 1)
         #expect(textView.visualText == "he[a]der:emoji:footer")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "he[a]der🐈footer")
     }
@@ -93,7 +93,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 15, length: 1)
         #expect(textView.visualText == "header:emoji:fo[o]ter")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "header🐈fo[o]ter")
     }
@@ -104,7 +104,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 4, length: 9)
         #expect(textView.visualText == "head[er:emoji:]footer")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "head[er🐈]footer")
     }
@@ -115,7 +115,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 0, length: 10)
         #expect(textView.visualText == "[header:emo]ji:footer")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "[header🐈]footer")
     }
@@ -126,7 +126,7 @@ struct PerformEditingTransactionTests {
         textView.text = "header:emoji:footer"
         textView.selectedRange = NSRange(location: 9, length: 8)
         #expect(textView.visualText == "header:em[oji:foot]er")
-        textView.replace2(range: textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 7)!, withAttributedText: NSAttributedString(string: "🐈"))
 
         #expect(textView.visualText == "header🐈[foot]er")
     }
@@ -134,14 +134,14 @@ struct PerformEditingTransactionTests {
 
 @MainActor
 @Suite("文字数が増えるケース")
-struct PerformEditingTransactionTests2 {
+struct ReplaceAndAdjutSelectedTextRangeTests2 {
     @Test("[]🐈 -> []:cat:")
     func replace() async throws {
         let textView = UITextView()
         textView.text = "🐈"
         textView.selectedRange = NSRange(location: 0, length: 0)
         #expect(textView.visualText == "[]🐈")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: ":cat:"))
         #expect(textView.visualText == "[]:cat:")
     }
     
@@ -151,7 +151,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "🐈"
         textView.selectedRange = NSRange(location: 7, length: 0)
         #expect(textView.visualText == "🐈[]")
-        textView.replace2(range: textView.documentRange, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.documentRange, withAttributedText: NSAttributedString(string: ":cat:"))
         #expect(textView.visualText == ":cat:[]")
     }
     
@@ -161,7 +161,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "header🐈footer"
         textView.selectedRange = NSRange(location: 4, length: 7)
         #expect(textView.visualText == "head[er🐈foo]ter")
-        textView.replace2(range: textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
         #expect(textView.visualText == "head[er:cat:foo]ter")
     }
     
@@ -171,7 +171,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "header🐈footer"
         textView.selectedRange = NSRange(location: 8, length: 6)
         #expect(textView.visualText == "header🐈[footer]")
-        textView.replace2(range: textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
 
         #expect(textView.visualText == "header:cat:[footer]")
     }
@@ -182,7 +182,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "header🐈footer"
         textView.selectedRange = NSRange(location: 2, length: 1)
         #expect(textView.visualText == "he[a]der🐈footer")
-        textView.replace2(range: textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
 
         #expect(textView.visualText == "he[a]der:cat:footer")
     }
@@ -193,7 +193,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "header🐈footer"
         textView.selectedRange = NSRange(location: 10, length: 1)
         #expect(textView.visualText == "header🐈fo[o]ter")
-        textView.replace2(range: textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
 
         #expect(textView.visualText == "header:cat:fo[o]ter")
     }
@@ -204,7 +204,7 @@ struct PerformEditingTransactionTests2 {
         textView.text = "header🐈footer"
         textView.selectedRange = NSRange(location: 4, length: 4)
         #expect(textView.visualText == "head[er🐈]footer")
-        textView.replace2(range: textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
+        textView.replaceAndAdjutSelectedTextRange( textView.textRange(location: 6, length: 2)!, withAttributedText: NSAttributedString(string: ":cat:"))
 
         #expect(textView.visualText == "head[er:cat:]footer")
     }

@@ -8,6 +8,18 @@ extension UITextView {
     }
 
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
+    
+    public func setReplacedAttributedText(
+        _ transform: ShortcodeTransform,
+        granularity: Granularity
+    ) {
+        switch granularity {
+        case .selectedLine:
+            replaceShortcode(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: true)
+        case .document:
+            replaceShortcode(in: documentRange, transform: transform, usesDelegate: true)
+        }
+    }
 
     public func replaceShortcode(
         _ transform: ShortcodeTransform,
@@ -15,39 +27,13 @@ extension UITextView {
     ) {
         switch granularity {
         case .selectedLine:
-            replaceShortcodeLine(
-                transform: transform,
-                at: selectedTextRange?.start ?? endOfDocument
-            )
+            replaceShortcode(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: true)
         case .document:
-            replaceShortcodeWholeDocument(transform: transform)
+            replaceShortcode(in: documentRange, transform: transform, usesDelegate: true)
         }
     }
 
-    func replaceShortcodeLine(transform: ShortcodeTransform, at posision: UITextPosition) {
-        let lineRangeStart = tokenizer.position(
-            from: posision,
-            toBoundary: .line,
-            inDirection: .layout(.left)
-        )
-        let lineRangeEnd = tokenizer.position(
-            from: posision,
-            toBoundary: .line,
-            inDirection: .layout(.right)
-        )
-        guard let lineRangeStart, let lineRangeEnd else { return }
-        let lineRange = textRange(from: lineRangeStart, to: lineRangeEnd)
-        guard let lineRange else { return }
-        replaceShortcode(in: lineRange, transform: transform)
-    }
-
-    func replaceShortcodeWholeDocument(transform: ShortcodeTransform) {
-        let documentRange = textRange(from: beginningOfDocument, to: endOfDocument)
-        guard let documentRange else { return }
-        replaceShortcode(in: documentRange, transform: transform)
-    }
-
-    func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform) {
+    func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform, usesDelegate: Bool = true) {
         var didChanged: Bool = false
         attributedText(in: range)
             .enumerateShortcodes(
@@ -63,7 +49,7 @@ extension UITextView {
                     }
                 }
             )
-        if didChanged {
+        if didChanged && usesDelegate {
             delegate?.textViewDidChange?(self)
         }
     }

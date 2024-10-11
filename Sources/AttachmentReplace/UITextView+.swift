@@ -9,45 +9,31 @@ extension UITextView {
     
     public typealias AttachmentTransform = (NSTextAttachment) -> NSAttributedString?
     
+    public func setReplacedAttributedText(
+        _ transform: AttachmentTransform,
+        granularity: Granularity
+    ) {
+        switch granularity {
+        case .selectedLine:
+            replaceAttachment(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: false)
+        case .document:
+            replaceAttachment(in: documentRange, transform: transform, usesDelegate: false)
+        }
+    }
+    
     public func replaceAttachment(
         _ transform: AttachmentTransform,
         granularity: Granularity
     ) {
         switch granularity {
         case .selectedLine:
-            replaceAttachmentLine(
-                transform: transform,
-                at: selectedTextRange?.start ?? endOfDocument
-            )
+            replaceAttachment(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: true)
         case .document:
-            replaceAttachmentWholeDocument(transform: transform)
+            replaceAttachment(in: documentRange, transform: transform, usesDelegate: true)
         }
     }
-
-    func replaceAttachmentLine(transform: AttachmentTransform, at posision: UITextPosition) {
-        let lineRangeStart = tokenizer.position(
-            from: posision,
-            toBoundary: .line,
-            inDirection: .layout(.left)
-        )
-        let lineRangeEnd = tokenizer.position(
-            from: posision,
-            toBoundary: .line,
-            inDirection: .layout(.right)
-        )
-        guard let lineRangeStart, let lineRangeEnd else { return }
-        let lineRange = textRange(from: lineRangeStart, to: lineRangeEnd)
-        guard let lineRange else { return }
-        replaceAttachment(in: lineRange, transform: transform)
-    }
-
-    func replaceAttachmentWholeDocument(transform: AttachmentTransform) {
-        let documentRange = textRange(from: beginningOfDocument, to: endOfDocument)
-        guard let documentRange else { return }
-        replaceAttachment(in: documentRange, transform: transform)
-    }
     
-    func replaceAttachment(in range: UITextRange, transform: AttachmentTransform) {
+    func replaceAttachment(in range: UITextRange, transform: AttachmentTransform, usesDelegate: Bool = true) {
         var didChanged: Bool = false
         // 先頭からのrange
         let nsRange = NSRange(range, in: self)
@@ -61,7 +47,7 @@ extension UITextView {
                     }
                 }
             })
-        if didChanged {
+        if didChanged && usesDelegate {
             delegate?.textViewDidChange?(self)
         }
     }

@@ -51,6 +51,22 @@ extension UITextView {
         textRange(from: beginningOfDocument, to: endOfDocument)!
     }
     
+    package var selectedLineTextRange: UITextRange? {
+        let position = selectedTextRange?.start ?? endOfDocument
+        let lineRangeStart = tokenizer.position(
+            from: position,
+            toBoundary: .line,
+            inDirection: .layout(.left)
+        )
+        let lineRangeEnd = tokenizer.position(
+            from: position,
+            toBoundary: .line,
+            inDirection: .layout(.right)
+        )
+        guard let lineRangeStart, let lineRangeEnd else { return nil }
+        return textRange(from: lineRangeStart, to: lineRangeEnd)
+    }
+    
     package func length(from: UITextPosition, to: UITextPosition) -> Int {
         let start = offset(from: beginningOfDocument, to: from)
         let end = offset(from: beginningOfDocument, to: to)

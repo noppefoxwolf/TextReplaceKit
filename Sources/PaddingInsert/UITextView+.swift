@@ -10,7 +10,8 @@ extension UITextView {
     public func insertText(
         _ text: String,
         leadingPadding: Bool,
-        trailingPadding: TrailingPadding
+        trailingPadding: TrailingPadding,
+        usesDelegate: Bool = true
     ) {
         let textRange = selectedTextRange ?? textRange(from: endOfDocument, to: endOfDocument)
         guard let textRange else { return }
@@ -26,14 +27,23 @@ extension UITextView {
         }
         insertText(text, at: textRange.start)
         if trailingPadding == .addition && !hasTrailingPadding {
-            appendText("\u{0020}")
+            appendText("\u{0020}", usesDelegate: false)
+        }
+        if usesDelegate {
+            delegate?.textViewDidChange?(self)
         }
     }
     
-    func appendText(_ text: String) {
-        let beforeTextRange = selectedTextRange
-        replaceAndAdjutSelectedTextRange(selectedTextRange!, withText: text)
+    public func appendText(_ text: String, usesDelegate: Bool = true) {
+        let textRange = selectedTextRange ?? textRange(from: endOfDocument, to: endOfDocument)
+        guard let textRange else { return }
+        
+        let beforeTextRange = textRange
+        replaceAndAdjutSelectedTextRange(textRange, withText: text)
         selectedTextRange = beforeTextRange
+        if usesDelegate {
+            delegate?.textViewDidChange?(self)
+        }
     }
     
     func insertText(_ text: String, at position: UITextPosition) {

@@ -64,4 +64,23 @@ struct UITextViewInsertTests {
         textView.insertText("#apple", leadingPadding: true, trailingPadding: .insert)
         #expect(textView.visualText == "Hello #apple []")
     }
+    
+    @Test
+    func callDidChanged() async throws {
+        final class Delegate: NSObject, UITextViewDelegate {
+            var textViewDidChange: Int = 0
+            func textViewDidChange(_ textView: UITextView) {
+                textViewDidChange += 1
+            }
+        }
+        let delegate = Delegate()
+        let textView = UITextView()
+        textView.delegate = delegate
+        textView.insertText("a")
+        #expect(delegate.textViewDidChange == 1)
+        textView.insertText("b", leadingPadding: true, trailingPadding: .addition)
+        #expect(delegate.textViewDidChange == 2)
+        textView.appendText("c")
+        #expect(delegate.textViewDidChange == 3)
+    }
 }

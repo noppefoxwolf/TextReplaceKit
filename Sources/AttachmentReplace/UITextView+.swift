@@ -11,37 +11,74 @@ extension UITextView {
     
     public func setReplacedAttributedText(
         _ transform: AttachmentTransform,
+        skipUnbrokenAttachments: Bool = false,
         granularity: Granularity
     ) {
         switch granularity {
         case .selectedLine:
-            replaceAttachment(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: false)
+            replaceAttachment(
+                in: selectedLineTextRange ?? documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: false
+            )
         case .document:
-            replaceAttachment(in: documentRange, transform: transform, usesDelegate: false)
+            replaceAttachment(
+                in: documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: false
+            )
         }
     }
     
     public func replaceAttachment(
         _ transform: AttachmentTransform,
+        skipUnbrokenAttachments: Bool = false,
         granularity: Granularity
     ) {
         switch granularity {
         case .selectedLine:
-            replaceAttachment(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: true)
+            replaceAttachment(
+                in: selectedLineTextRange ?? documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: true
+            )
         case .document:
-            replaceAttachment(in: documentRange, transform: transform, usesDelegate: true)
+            replaceAttachment(
+                in: documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: true
+            )
         }
     }
     
-    func replaceAttachment(in range: UITextRange, transform: AttachmentTransform, usesDelegate: Bool = true) {
+    func replaceAttachment(
+        in range: UITextRange,
+        transform: AttachmentTransform,
+        skipUnbrokenAttachments: Bool = false,
+        usesDelegate: Bool = true
+    ) {
         var didChanged: Bool = false
         // 先頭からのrange
         let nsRange = NSRange(range, in: self)
         attributedText(in: range)
-            .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { attachment, range, _ in
-                if let attachment = attachment as? NSTextAttachment, let transformed = transform(attachment) {
-                    let textRange = textRange(from: beginningOfDocument, for: range)
-                    if let textRange {
+            .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { textAttachment, range, _ in
+                guard let textAttachment = textAttachment as? NSTextAttachment else { return }
+                
+                let textRange = textRange(from: beginningOfDocument, for: range)
+                if let textRange {
+                    if skipUnbrokenAttachments {
+                        let hasPadding = hasLeadingPadding(at: textRange.start) && hasTrailingPadding(at: textRange.end)
+                        print(hasPadding, textAttachment)
+                        if hasPadding {
+                            return
+                        }
+                    }
+                    
+                    if let transformed = transform(textAttachment) {
                         replaceAndAdjutSelectedTextRange(textRange, withAttributedText: transformed)
                         didChanged = true
                     }

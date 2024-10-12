@@ -67,6 +67,30 @@ extension UITextView {
         return textRange(from: lineRangeStart, to: lineRangeEnd)
     }
     
+    package func hasLeadingPadding(at position: UITextPosition) -> Bool {
+        guard let beforeText = documentContextBefore(at: position) else { return true }
+        guard beforeText.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else { return false }
+        return true
+    }
+    
+    package func hasTrailingPadding(at position: UITextPosition) -> Bool {
+        guard let afterText = documentContextAfter(at: position) else { return true }
+        guard afterText.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else { return false }
+        return true
+    }
+    
+    package func documentContextBefore(at position: UITextPosition) -> String? {
+        guard let from = self.position(from: position, offset: -1) else { return nil }
+        guard let textRange = self.textRange(from: from, to: position) else { return nil }
+        return text(in: textRange)
+    }
+    
+    package func documentContextAfter(at position: UITextPosition) -> String? {
+        guard let from = self.position(from: position, offset: 1) else { return nil }
+        guard let textRange = self.textRange(from: from, to: position) else { return nil }
+        return text(in: textRange)
+    }
+    
     package func length(from: UITextPosition, to: UITextPosition) -> Int {
         let start = offset(from: beginningOfDocument, to: from)
         let end = offset(from: beginningOfDocument, to: to)

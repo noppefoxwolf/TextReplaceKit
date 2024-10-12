@@ -257,8 +257,20 @@ struct TextViewReplaceTests {
 
         textView.insertText(":three:")
         #expect(textView.visualText == "1️⃣:three:[] 2️⃣")
-        textView.replaceShortcode(transform, granularity: .selectedLine)
         
+        let attachmentTransform = { (textAttachment: NSTextAttachment) -> NSAttributedString? in
+            guard let textAttachment = textAttachment as? TextAttachment else { return nil }
+            switch textAttachment.emoji {
+            case "1️⃣":
+                return NSAttributedString(string: ":one:")
+            default:
+                return nil
+            }
+        }
+        textView.replaceAttachment(attachmentTransform, skipUnbrokenAttachments: true, granularity: .selectedLine)
+        #expect(textView.visualText == ":one::three:[] 2️⃣")
+        
+        textView.replaceShortcode(transform, granularity: .selectedLine)
         #expect(textView.visualText == ":one::three:[] 2️⃣")
     }
 }

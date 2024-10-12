@@ -70,5 +70,15 @@ struct AttachmentReplaceTests {
         })
         #expect(textView.visualText == "HogeHoge:cat:[Fuga]Fuga")
     }
+    
+    @Test(##"Thread 1: "NSMutableRLEArray objectAtIndex:effectiveRange:runIndex:: Out of bounds""##)
+    func crashBug() throws {
+        let textView = UITextView()
+        textView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        textView.insertText("#きつねかわいい", leadingPadding: true, trailingPadding: .insert)
+        textView.setReplacedAttributedText({ (textAttachment: NSTextAttachment) in
+            nil
+        }, granularity: .selectedLine)
+    }
 }
 

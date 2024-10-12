@@ -52,14 +52,15 @@ extension UITextView {
     }
     
     package var selectedLineTextRange: UITextRange? {
-        let position = selectedTextRange?.start ?? endOfDocument
+        let start = selectedTextRange?.start ?? beginningOfDocument
+        let end = selectedTextRange?.end ?? endOfDocument
         let lineRangeStart = tokenizer.position(
-            from: position,
+            from: start,
             toBoundary: .line,
             inDirection: .layout(.left)
         )
         let lineRangeEnd = tokenizer.position(
-            from: position,
+            from: end,
             toBoundary: .line,
             inDirection: .layout(.right)
         )

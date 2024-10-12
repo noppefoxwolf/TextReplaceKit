@@ -63,8 +63,10 @@ extension UITextView {
     ) {
         var didChanged: Bool = false
         // 先頭からのrange
-        let nsRange = NSRange(range, in: self)
-        attributedText(in: range)
+        let subAttributedText = attributedText(in: range)
+        
+        let nsRange = subAttributedText.range
+        subAttributedText
             .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { textAttachment, range, _ in
                 guard let textAttachment = textAttachment as? NSTextAttachment else { return }
                 

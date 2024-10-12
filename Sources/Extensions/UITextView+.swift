@@ -120,7 +120,10 @@ extension UITextView {
 
 extension UITextView {
     package func replaceAndAdjutSelectedTextRange(_ range: UITextRange, withText text: String) {
-        replaceAndAdjutSelectedTextRange(range, withAttributedText: NSAttributedString(string: text))
+        replaceAndAdjutSelectedTextRange(
+            range,
+            withAttributedText: NSAttributedString(string: text, attributes: typingAttributes)
+        )
     }
     
     package func replaceAndAdjutSelectedTextRange(_ textRange: UITextRange, withAttributedText attributedText: NSAttributedString) {

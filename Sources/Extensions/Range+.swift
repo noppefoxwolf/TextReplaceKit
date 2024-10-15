@@ -1,7 +1,6 @@
 import UIKit
 
 extension NSRange {
-    
     @MainActor
     package init(_ range: UITextRange, in textView: UITextView) {
         let startLocation = textView.offset(from: textView.beginningOfDocument, to: range.start)

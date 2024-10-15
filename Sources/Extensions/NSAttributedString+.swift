@@ -1,4 +1,4 @@
-import Foundation
+package import Foundation
 
 extension NSAttributedString {
     package func copyAsMutable() -> NSMutableAttributedString {

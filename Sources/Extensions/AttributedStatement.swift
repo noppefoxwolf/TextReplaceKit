@@ -1,4 +1,4 @@
-import Foundation
+package import Foundation
 
 package final class AttributedStatement {
     package var leadingAttributedText: NSAttributedString?

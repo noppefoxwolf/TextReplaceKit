@@ -1,4 +1,4 @@
-import UIKit
+package import UIKit
 
 extension NSRange {
     @MainActor

@@ -1,4 +1,4 @@
-import UIKit
+public import UIKit
 import Extensions
 
 extension UITextView {

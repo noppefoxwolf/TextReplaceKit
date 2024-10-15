@@ -302,19 +302,6 @@ struct TextViewReplaceTests {
     }
 }
 
-open class CodableTextAttachment: NSTextAttachment {
-    public var rawValue: String
-    
-    public init(rawValue: String) {
-        self.rawValue = rawValue
-        super.init(data: nil, ofType: nil)
-    }
-    
-    required public init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 final class TextAttachment: NSTextAttachment {
 
     let emoji: String

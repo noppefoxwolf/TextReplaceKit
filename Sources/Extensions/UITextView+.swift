@@ -1,4 +1,4 @@
-import UIKit
+package import UIKit
 
 extension UITextView {
     /// silentReplace don't call delegates

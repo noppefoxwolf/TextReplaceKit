@@ -286,6 +286,15 @@ struct TextViewReplaceTests {
         textView.setReplacedAttributedText({ _ in  NSAttributedString(string: ":cat:") }, skipUnbrokenAttachments: true, granularity: .selectedLine)
         #expect(textView.visualText == "\n🐈[]")
     }
+    
+    @Test
+    func replacePiece() async throws {
+        let textView = UITextView()
+        textView.insertText("hoge:night_fox_da")
+        let textRange = textView.textRange(location: 4, length: 13)!
+        textView.replaceText(textRange: textRange, withText: ":night_fox_dawn:", leadingPadding: true, trailingPadding: .insert)
+        #expect(textView.visualText == "hoge :night_fox_dawn: []")
+    }
 }
 
 open class CodableTextAttachment: NSTextAttachment {

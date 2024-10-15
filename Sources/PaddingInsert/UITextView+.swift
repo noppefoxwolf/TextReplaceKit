@@ -15,23 +15,13 @@ extension UITextView {
     ) {
         let textRange = selectedTextRange ?? textRange(from: endOfDocument, to: endOfDocument)
         guard let textRange else { return }
-        
-        var text = text
-        let hasLeadingPadding = hasLeadingPadding(at: textRange.start)
-        let hasTrailingPadding = hasTrailingPadding(at: textRange.end)
-        if leadingPadding && !hasLeadingPadding {
-            text.insert("\u{0020}", at: text.startIndex)
-        }
-        if trailingPadding == .insert {
-            text.insert("\u{0020}", at: text.endIndex)
-        }
-        insertText(text, at: textRange.start)
-        if trailingPadding == .addition && !hasTrailingPadding {
-            appendText("\u{0020}", usesDelegate: false)
-        }
-        if usesDelegate {
-            delegate?.textViewDidChange?(self)
-        }
+        replaceText(
+            textRange: textRange,
+            withText: text,
+            leadingPadding: leadingPadding,
+            trailingPadding: trailingPadding,
+            usesDelegate: usesDelegate
+        )
     }
     
     public func appendText(_ text: String, usesDelegate: Bool = true) {
@@ -46,8 +36,28 @@ extension UITextView {
         }
     }
     
-    func insertText(_ text: String, at position: UITextPosition) {
-        let range = textRange(from: position, to: position)!
-        replaceAndAdjutSelectedTextRange(range, withText: text)
+    public func replaceText(
+        textRange: UITextRange,
+        withText text: String,
+        leadingPadding: Bool,
+        trailingPadding: TrailingPadding,
+        usesDelegate: Bool = true
+    ) {
+        var text = text
+        let hasLeadingPadding = hasLeadingPadding(at: textRange.start)
+        let hasTrailingPadding = hasTrailingPadding(at: textRange.end)
+        if leadingPadding && !hasLeadingPadding {
+            text.insert("\u{0020}", at: text.startIndex)
+        }
+        if trailingPadding == .insert {
+            text.insert("\u{0020}", at: text.endIndex)
+        }
+        replaceAndAdjutSelectedTextRange(textRange, withText: text)
+        if trailingPadding == .addition && !hasTrailingPadding {
+            appendText("\u{0020}", usesDelegate: false)
+        }
+        if usesDelegate {
+            delegate?.textViewDidChange?(self)
+        }
     }
 }

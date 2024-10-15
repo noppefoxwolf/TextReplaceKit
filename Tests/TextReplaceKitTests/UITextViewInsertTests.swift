@@ -83,4 +83,13 @@ struct UITextViewInsertTests {
         textView.appendText("c")
         #expect(delegate.textViewDidChange == 3)
     }
+    
+    @Test
+    func newlineBug() async throws {
+        let textView = UITextView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        textView.insertText("\n")
+        #expect(textView.visualText == "\n[]")
+        textView.insertText(":ai_icon:", leadingPadding: true, trailingPadding: .insert)
+        #expect(textView.visualText == "\n:ai_icon: []")
+    }
 }

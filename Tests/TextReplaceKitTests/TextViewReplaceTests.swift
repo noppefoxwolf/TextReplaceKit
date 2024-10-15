@@ -273,6 +273,19 @@ struct TextViewReplaceTests {
         textView.replaceShortcode(transform, granularity: .selectedLine)
         #expect(textView.visualText == ":one::three:[] 2️⃣")
     }
+    
+    @Test
+    func newlineBug() async throws {
+        let textView = UITextView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        textView.insertText("\n")
+        textView.insertText(":cat:")
+        textView.replaceShortcode({ _ in
+            NSAttributedString(attachment: TextAttachment("🐈"))
+        }, granularity: .selectedLine)
+        #expect(textView.visualText == "\n🐈[]")
+        textView.setReplacedAttributedText({ _ in  NSAttributedString(string: ":cat:") }, skipUnbrokenAttachments: true, granularity: .selectedLine)
+        #expect(textView.visualText == "\n🐈[]")
+    }
 }
 
 open class CodableTextAttachment: NSTextAttachment {

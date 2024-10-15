@@ -67,10 +67,10 @@ extension UITextView {
         
         let nsRange = subAttributedText.range
         subAttributedText
-            .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { textAttachment, range, _ in
+            .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { textAttachment, subNSRange, _ in
                 guard let textAttachment = textAttachment as? NSTextAttachment else { return }
                 
-                let textRange = textRange(from: beginningOfDocument, for: range)
+                let textRange = textRange(from: range.start, for: subNSRange)
                 if let textRange {
                     if skipUnbrokenAttachments {
                         let hasPadding = hasLeadingPadding(at: textRange.start) && hasTrailingPadding(at: textRange.end)

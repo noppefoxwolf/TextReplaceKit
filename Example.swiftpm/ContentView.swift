@@ -1,5 +1,6 @@
 import SwiftUI
 import TextReplaceKit
+import AttachmentReplace
 
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -36,6 +37,29 @@ final class TextViewController: UIViewController, UITextViewDelegate {
                     textView.insertText(":fox: :fox::smile: :fox:")
                     textViewDidChange(textView)
                 }
+            ),
+            UIBarButtonItem(
+                image: UIImage(systemName: "abc"),
+                primaryAction: UIAction { [unowned self] _ in
+                    let textRange = textView.textRange(from: textView.beginningOfDocument, to: textView.endOfDocument)!
+                    textView.replaceAttachment(in: textRange) { textAttachment in
+                        let textAttachment = textAttachment as! TextAttachment
+                        switch textAttachment.emoji {
+                        case "🦊":
+                            return NSAttributedString(string: "fox")
+                        case "😊":
+                            return NSAttributedString(string: "smile")
+                        default:
+                            return nil
+                        }
+                    }
+                }
+            ),
+            UIBarButtonItem(
+                image: UIImage(systemName: "abc"),
+                primaryAction: UIAction { [unowned self] _ in
+                    textView.setMarkedText("こんにち", selectedRange: NSRange(location: 0, length: 4))
+                }
             )
         ]
     }
@@ -51,17 +75,33 @@ final class TextViewController: UIViewController, UITextViewDelegate {
         print(shortcode.rawValue)
         switch shortcode.name {
         case "fox":
-            var attributedString = AttributedString("🦊")
-            attributedString.font = textView.font
-            attributedString.foregroundColor = textView.textColor
-            return NSAttributedString(attributedString)
+            return NSAttributedString(attachment: TextAttachment("🦊"))
         case "smile":
-            var attributedString = AttributedString("😊")
-            attributedString.font = textView.font
-            attributedString.foregroundColor = textView.textColor
-            return NSAttributedString(attributedString)
+            return NSAttributedString(attachment: TextAttachment("😊"))
         default:
             return nil
         }
+    }
+}
+
+final class TextAttachment: NSTextAttachment {
+
+    let emoji: String
+
+    init(_ emoji: String) {
+        self.emoji = emoji
+        super.init(data: nil, ofType: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func image(
+        forBounds imageBounds: CGRect,
+        textContainer: NSTextContainer?,
+        characterIndex charIndex: Int
+    ) -> UIImage? {
+        UIImage(systemName: "apple.logo")
     }
 }

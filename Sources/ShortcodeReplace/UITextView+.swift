@@ -15,9 +15,9 @@ extension UITextView {
     ) {
         switch granularity {
         case .selectedLine:
-            replaceShortcode(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: true)
+            replaceShortcode(in: selectedLineTextRange ?? documentRange, transform: transform, usesDelegate: false)
         case .document:
-            replaceShortcode(in: documentRange, transform: transform, usesDelegate: true)
+            replaceShortcode(in: documentRange, transform: transform, usesDelegate: false)
         }
     }
 

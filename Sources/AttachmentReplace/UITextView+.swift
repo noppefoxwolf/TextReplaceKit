@@ -74,7 +74,6 @@ extension UITextView {
                 if let textRange {
                     if skipUnbrokenAttachments {
                         let hasPadding = hasLeadingPadding(at: textRange.start) && hasTrailingPadding(at: textRange.end)
-                        print(hasPadding, textAttachment)
                         if hasPadding {
                             return
                         }

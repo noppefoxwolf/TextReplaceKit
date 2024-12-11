@@ -41,8 +41,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
             UIBarButtonItem(
                 image: UIImage(systemName: "abc"),
                 primaryAction: UIAction { [unowned self] _ in
-                    let textRange = textView.textRange(from: textView.beginningOfDocument, to: textView.endOfDocument)!
-                    textView.replaceAttachment(in: textRange) { textAttachment in
+                    textView.replaceAttachment({ textAttachment in
                         let textAttachment = textAttachment as! TextAttachment
                         switch textAttachment.emoji {
                         case "🦊":
@@ -52,7 +51,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
                         default:
                             return nil
                         }
-                    }
+                    }, granularity: .document)
                 }
             ),
             UIBarButtonItem(

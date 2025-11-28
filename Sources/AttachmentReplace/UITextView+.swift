@@ -4,44 +4,57 @@ public import UIKit
 extension UITextView {
     public typealias AttachmentTransform = (NSTextAttachment) -> NSAttributedString?
 
+    public func replaceAttachmentsSilently(
+        _ transform: AttachmentTransform,
+        skipUnbrokenAttachments: Bool = false,
+        granularity: TextReplaceGranularity
+    ) {
+        switch granularity {
+        case .selectedLine:
+            replaceAttachments(
+                in: selectedLineTextRange ?? documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: false
+            )
+        case .document:
+            replaceAttachments(
+                in: documentRange,
+                transform: transform,
+                skipUnbrokenAttachments: skipUnbrokenAttachments,
+                usesDelegate: false
+            )
+        }
+    }
+
+    @available(*, deprecated, renamed: "replaceAttachmentsSilently(_:skipUnbrokenAttachments:granularity:)")
     public func setReplacedAttributedText(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
         granularity: TextReplaceGranularity
     ) {
-        switch granularity {
-        case .selectedLine:
-            replaceAttachment(
-                in: selectedLineTextRange ?? documentRange,
-                transform: transform,
-                skipUnbrokenAttachments: skipUnbrokenAttachments,
-                usesDelegate: false
-            )
-        case .document:
-            replaceAttachment(
-                in: documentRange,
-                transform: transform,
-                skipUnbrokenAttachments: skipUnbrokenAttachments,
-                usesDelegate: false
-            )
-        }
+        replaceAttachmentsSilently(
+            transform,
+            skipUnbrokenAttachments: skipUnbrokenAttachments,
+            granularity: granularity
+        )
     }
 
-    public func replaceAttachment(
+    public func replaceAttachments(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
         granularity: TextReplaceGranularity
     ) {
         switch granularity {
         case .selectedLine:
-            replaceAttachment(
+            replaceAttachments(
                 in: selectedLineTextRange ?? documentRange,
                 transform: transform,
                 skipUnbrokenAttachments: skipUnbrokenAttachments,
                 usesDelegate: true
             )
         case .document:
-            replaceAttachment(
+            replaceAttachments(
                 in: documentRange,
                 transform: transform,
                 skipUnbrokenAttachments: skipUnbrokenAttachments,
@@ -50,7 +63,20 @@ extension UITextView {
         }
     }
 
-    func replaceAttachment(
+    @available(*, deprecated, renamed: "replaceAttachments(_:skipUnbrokenAttachments:granularity:)")
+    public func replaceAttachment(
+        _ transform: AttachmentTransform,
+        skipUnbrokenAttachments: Bool = false,
+        granularity: TextReplaceGranularity
+    ) {
+        replaceAttachments(
+            transform,
+            skipUnbrokenAttachments: skipUnbrokenAttachments,
+            granularity: granularity
+        )
+    }
+
+    func replaceAttachments(
         in range: UITextRange,
         transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
@@ -81,7 +107,7 @@ extension UITextView {
                         }
 
                         if let transformed = transform(textAttachment) {
-                            replaceAndAdjustSelectedTextRange(
+                            replacePreservingSelection(
                                 textRange,
                                 withAttributedText: transformed
                             )

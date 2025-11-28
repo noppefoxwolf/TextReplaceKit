@@ -41,7 +41,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
             UIBarButtonItem(
                 image: UIImage(systemName: "abc"),
                 primaryAction: UIAction { [unowned self] _ in
-                    textView.replaceAttachment(
+                    textView.replaceAttachments(
                         { textAttachment in
                             let textAttachment = textAttachment as! TextAttachment
                             switch textAttachment.emoji {
@@ -67,7 +67,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        textView.replaceShortcode(
+        textView.replaceShortcodes(
             transform(_:),
             granularity: .selectedLine
         )

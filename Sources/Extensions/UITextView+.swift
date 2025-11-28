@@ -132,15 +132,20 @@ extension UITextView {
 }
 
 extension UITextView {
-    package func replaceAndAdjustSelectedTextRange(_ textRange: UITextRange, withText text: String)
-    {
-        replaceAndAdjustSelectedTextRange(
+    package func replacePreservingSelection(_ textRange: UITextRange, withText text: String) {
+        replacePreservingSelection(
             textRange,
             withAttributedText: NSAttributedString(string: text, attributes: typingAttributes)
         )
     }
 
-    package func replaceAndAdjustSelectedTextRange(
+    @available(*, deprecated, renamed: "replacePreservingSelection(_:withText:)")
+    package func replaceAndAdjustSelectedTextRange(_ textRange: UITextRange, withText text: String)
+    {
+        replacePreservingSelection(textRange, withText: text)
+    }
+
+    package func replacePreservingSelection(
         _ textRange: UITextRange,
         withAttributedText attributedText: NSAttributedString
     ) {
@@ -162,6 +167,14 @@ extension UITextView {
                 replacedRange: changedTextRange
             )
         }
+    }
+
+    @available(*, deprecated, renamed: "replacePreservingSelection(_:withAttributedText:)")
+    package func replaceAndAdjustSelectedTextRange(
+        _ textRange: UITextRange,
+        withAttributedText attributedText: NSAttributedString
+    ) {
+        replacePreservingSelection(textRange, withAttributedText: attributedText)
     }
 
     func adjustedTextRange(

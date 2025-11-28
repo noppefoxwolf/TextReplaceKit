@@ -22,7 +22,7 @@ struct AttachmentReplaceTests {
         let to = textView.position(from: textView.beginningOfDocument, offset: 13)!
         let range = textView.textRange(from: from, to: to)!
         #expect(textView.attributedText(in: range).string == "Hoge￼Fuga")
-        textView.replaceAttachment(
+        textView.replaceAttachments(
             in: textView.documentRange,
             transform: { _ in
                 NSAttributedString(string: ":cat:")
@@ -47,7 +47,7 @@ struct AttachmentReplaceTests {
         let to = textView.position(from: textView.beginningOfDocument, offset: 13)!
         let range = textView.textRange(from: from, to: to)!
         #expect(textView.attributedText(in: range).string == "Hoge￼Fuga")
-        textView.replaceAttachment(
+        textView.replaceAttachments(
             in: textView.documentRange,
             transform: { _ in
                 NSAttributedString(string: ":cat:")
@@ -72,7 +72,7 @@ struct AttachmentReplaceTests {
         let to = textView.position(from: textView.beginningOfDocument, offset: 13)!
         let range = textView.textRange(from: from, to: to)!
         #expect(textView.attributedText(in: range).string == "Hoge￼Fuga")
-        textView.replaceAttachment(
+        textView.replaceAttachments(
             in: textView.documentRange,
             transform: { _ in
                 NSAttributedString(string: ":cat:")
@@ -86,7 +86,7 @@ struct AttachmentReplaceTests {
         let textView = UITextView()
         textView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         textView.insertText("#きつねかわいい", leadingPadding: true, trailingPadding: .insert)
-        textView.setReplacedAttributedText(
+        textView.replaceAttachmentsSilently(
             { (textAttachment: NSTextAttachment) in
                 nil
             },

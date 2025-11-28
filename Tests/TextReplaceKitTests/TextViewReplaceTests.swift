@@ -3,28 +3,32 @@ import UIKit
 
 @testable import TextReplaceKit
 
+private func numberShortcodeTransform() -> (Shortcode) -> NSAttributedString? {
+    { shortcode in
+        switch shortcode.name {
+        case "one":
+            NSAttributedString(attachment: TextAttachment("1️⃣"))
+        case "two":
+            NSAttributedString(attachment: TextAttachment("2️⃣"))
+        case "three":
+            NSAttributedString(attachment: TextAttachment("3️⃣"))
+        default:
+            nil
+        }
+    }
+}
+
 @MainActor
 @Suite
 struct TextViewReplaceTests {
     @Test
-    func replaceShortcode() {
+    func replaceShortcodes() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")
         #expect(textView.visualText == ":one: :two:[]")
 
-        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
-            switch shortcode.name {
-            case "one":
-                NSAttributedString(attachment: TextAttachment("1️⃣"))
-            case "two":
-                NSAttributedString(attachment: TextAttachment("2️⃣"))
-            case "three":
-                NSAttributedString(attachment: TextAttachment("3️⃣"))
-            default:
-                nil
-            }
-        }
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        let transform = numberShortcodeTransform()
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
 
         let position = textView.position(
             from: textView.beginningOfDocument,
@@ -36,30 +40,19 @@ struct TextViewReplaceTests {
 
         textView.insertText(" :three:")
         #expect(textView.visualText == "1️⃣ :three:[] 2️⃣")
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
 
         #expect(textView.visualText == "1️⃣ 3️⃣[] 2️⃣")
     }
 
     @Test
-    func replaceShortcodeWholeDocument() {
+    func replaceShortcodesWholeDocument() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")
         #expect(textView.visualText == ":one: :two:[]")
 
-        let transform = { (shortcode: Shortcode) -> NSAttributedString? in
-            switch shortcode.name {
-            case "one":
-                NSAttributedString(attachment: TextAttachment("1️⃣"))
-            case "two":
-                NSAttributedString(attachment: TextAttachment("2️⃣"))
-            case "three":
-                NSAttributedString(attachment: TextAttachment("3️⃣"))
-            default:
-                nil
-            }
-        }
-        textView.replaceShortcode(transform, granularity: .document)
+        let transform = numberShortcodeTransform()
+        textView.replaceShortcodes(transform, granularity: .document)
 
         let position = textView.position(
             from: textView.beginningOfDocument,
@@ -71,7 +64,7 @@ struct TextViewReplaceTests {
 
         textView.insertText(" :three:")
         #expect(textView.visualText == "1️⃣ :three:[] 2️⃣")
-        textView.replaceShortcode(transform, granularity: .document)
+        textView.replaceShortcodes(transform, granularity: .document)
 
         #expect(textView.visualText == "1️⃣ 3️⃣[] 2️⃣")
     }
@@ -88,7 +81,7 @@ struct TextViewReplaceTests {
                 nil
             }
         }
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
         #expect(textView.visualText == "🐈 :blobcat:test 🐈 🐈[]")
     }
 
@@ -113,7 +106,7 @@ struct TextViewReplaceTests {
                 nil
             }
         }
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
         #expect(textView.visualText == "🐈 :blobcat:test 🐈 🐈[]")
         #expect(watcher.didChange == 1)
     }
@@ -134,7 +127,7 @@ struct TextViewReplaceTests {
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             nil
         }
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
         #expect(textView.visualText == ":blobcat: :blobcat:test :blobcat: :blobcat:[]")
         #expect(watcher.didChange == 0)
     }
@@ -169,7 +162,7 @@ struct TextViewReplaceTests {
                 nil
             }
         }
-        textView.replaceShortcode(transform, granularity: .document)
+        textView.replaceShortcodes(transform, granularity: .document)
 
         let position = textView.position(
             from: textView.beginningOfDocument,
@@ -182,7 +175,7 @@ struct TextViewReplaceTests {
         // Thread 1: "-[NSNull _defaultLineHeightForUILayout]: unrecognized selector sent to instance 0x1e007fa58"
         textView.insertText(":three:")
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
-        textView.replaceShortcode(transform, granularity: .document)
+        textView.replaceShortcodes(transform, granularity: .document)
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
     }
@@ -219,7 +212,7 @@ struct TextViewReplaceTests {
                 nil
             }
         }
-        textView.replaceShortcode(transform, granularity: .document)
+        textView.replaceShortcodes(transform, granularity: .document)
         #expect(textView.font != nil)
         let position = textView.position(
             from: textView.beginningOfDocument,
@@ -236,7 +229,7 @@ struct TextViewReplaceTests {
         #expect(textView.font != nil)
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
-        textView.replaceShortcode(transform, granularity: .document)
+        textView.replaceShortcodes(transform, granularity: .document)
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
 
@@ -266,7 +259,7 @@ struct TextViewReplaceTests {
                 nil
             }
         }
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
 
         let position = textView.position(
             from: textView.beginningOfDocument,
@@ -288,14 +281,14 @@ struct TextViewReplaceTests {
                 return nil
             }
         }
-        textView.replaceAttachment(
+        textView.replaceAttachments(
             attachmentTransform,
             skipUnbrokenAttachments: true,
             granularity: .selectedLine
         )
         #expect(textView.visualText == ":one::three:[] 2️⃣")
 
-        textView.replaceShortcode(transform, granularity: .selectedLine)
+        textView.replaceShortcodes(transform, granularity: .selectedLine)
         #expect(textView.visualText == ":one::three:[] 2️⃣")
     }
 
@@ -304,14 +297,14 @@ struct TextViewReplaceTests {
         let textView = UITextView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         textView.insertText("\n")
         textView.insertText(":cat:")
-        textView.replaceShortcode(
+        textView.replaceShortcodes(
             { _ in
                 NSAttributedString(attachment: TextAttachment("🐈"))
             },
             granularity: .selectedLine
         )
         #expect(textView.visualText == "\n🐈[]")
-        textView.setReplacedAttributedText(
+        textView.replaceAttachmentsSilently(
             { _ in NSAttributedString(string: ":cat:") },
             skipUnbrokenAttachments: true,
             granularity: .selectedLine
@@ -341,8 +334,8 @@ struct TextViewReplaceTests {
         let shortcodeTransform = { (_: Shortcode) -> NSAttributedString? in nil }
         let attachmentTransform = { (_: NSTextAttachment) -> NSAttributedString? in nil }
 
-        textView.replaceShortcode(shortcodeTransform, granularity: .document)
-        textView.replaceAttachment(attachmentTransform, granularity: .document)
+        textView.replaceShortcodes(shortcodeTransform, granularity: .document)
+        textView.replaceAttachments(attachmentTransform, granularity: .document)
 
         #expect(textView.visualText == ":one: :two:[]")
     }

@@ -7,6 +7,16 @@ import UIKit
 @MainActor
 @Suite
 struct TextViewReplaceSelectionTests {
+    private func textRange(
+        in textView: UITextView,
+        start: Int,
+        length: Int
+    ) -> UITextRange {
+        textView.textRange(
+            from: textView.position(from: textView.beginningOfDocument, offset: start)!,
+            to: textView.position(from: textView.beginningOfDocument, offset: start + length)!
+        )!
+    }
 
     @Test
     func keepingSelection() {
@@ -16,17 +26,11 @@ struct TextViewReplaceSelectionTests {
 
         let replaceText = "Hello"
         let withText = "👐"
-        let replaceTextRange = textView.textRange(
-            from: textView.position(from: textView.beginningOfDocument, offset: 4)!,
-            to: textView.position(
-                from: textView.beginningOfDocument,
-                offset: 4 + replaceText.count
-            )!
-        )!
+        let replaceTextRange = textRange(in: textView, start: 4, length: replaceText.count)
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.replaceAndAdjustSelectedTextRange(replaceTextRange, withText: withText)
+        textView.replacePreservingSelection(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "The 👐 World !![]")
     }
@@ -40,21 +44,16 @@ struct TextViewReplaceSelectionTests {
         let offsetText = "👨‍👩‍👧‍👦he "
         let replaceText = "Hello"
         let withText = "👐"
-        let replaceTextRange = textView.textRange(
-            from: textView.position(
-                from: textView.beginningOfDocument,
-                offset: offsetText.utf16.count
-            )!,
-            to: textView.position(
-                from: textView.beginningOfDocument,
-                offset: offsetText.utf16.count + replaceText.utf16.count
-            )!
-        )!
+        let replaceTextRange = textRange(
+            in: textView,
+            start: offsetText.utf16.count,
+            length: replaceText.utf16.count
+        )
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
         #expect(textView.visualText(replaceTextRange) == "👨‍👩‍👧‍👦he [Hello] World !!")
 
-        textView.replaceAndAdjustSelectedTextRange(replaceTextRange, withText: withText)
+        textView.replacePreservingSelection(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "👨‍👩‍👧‍👦he 👐 World !![]")
     }
@@ -70,17 +69,11 @@ struct TextViewReplaceSelectionTests {
 
         let replaceText = "Hello"
         let withText = "👐"
-        let replaceTextRange = textView.textRange(
-            from: textView.position(from: textView.beginningOfDocument, offset: 4)!,
-            to: textView.position(
-                from: textView.beginningOfDocument,
-                offset: 4 + replaceText.count
-            )!
-        )!
+        let replaceTextRange = textRange(in: textView, start: 4, length: replaceText.count)
         #expect(textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.replaceAndAdjustSelectedTextRange(replaceTextRange, withText: withText)
+        textView.replacePreservingSelection(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "The 👐[] World !!")
     }
@@ -96,17 +89,11 @@ struct TextViewReplaceSelectionTests {
 
         let replaceText = "Hello"
         let withText = "👐"
-        let replaceTextRange = textView.textRange(
-            from: textView.position(from: textView.beginningOfDocument, offset: 4)!,
-            to: textView.position(
-                from: textView.beginningOfDocument,
-                offset: 4 + replaceText.count
-            )!
-        )!
+        let replaceTextRange = textRange(in: textView, start: 4, length: replaceText.count)
         #expect(!textView.contains(replaceTextRange, to: textView.selectedTextRange!.start))
         #expect(!textView.contains(replaceTextRange, to: textView.beginningOfDocument))
 
-        textView.replaceAndAdjustSelectedTextRange(replaceTextRange, withText: withText)
+        textView.replacePreservingSelection(replaceTextRange, withText: withText)
 
         #expect(textView.visualText == "[]The 👐 World !!")
     }

@@ -29,7 +29,7 @@ extension UITextView {
         guard let textRange else { return }
 
         let beforeTextRange = textRange
-        replaceAndAdjustSelectedTextRange(textRange, withText: text)
+        replacePreservingSelection(textRange, withText: text)
         selectedTextRange = beforeTextRange
         if usesDelegate {
             delegate?.textViewDidChange?(self)
@@ -52,7 +52,7 @@ extension UITextView {
         if trailingPadding == .insert {
             text.insert("\u{0020}", at: text.endIndex)
         }
-        replaceAndAdjustSelectedTextRange(textRange, withText: text)
+        replacePreservingSelection(textRange, withText: text)
         if trailingPadding == .addition && !hasTrailingPadding {
             appendText("\u{0020}", usesDelegate: false)
         }

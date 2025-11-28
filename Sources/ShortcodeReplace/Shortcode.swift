@@ -7,15 +7,21 @@ public struct Shortcode: Sendable {
 }
 
 public struct ShortcodeChunk: Sendable {
-    public let hasPrefixWhiteSpace: Bool
-    public let hasSuffixWhiteSpace: Bool
+    public let hasLeadingWhitespace: Bool
+    public let hasTrailingWhitespace: Bool
     public let shortcode: Shortcode
+
+    @available(*, deprecated, renamed: "hasLeadingWhitespace")
+    public var hasPrefixWhiteSpace: Bool { hasLeadingWhitespace }
+
+    @available(*, deprecated, renamed: "hasTrailingWhitespace")
+    public var hasSuffixWhiteSpace: Bool { hasTrailingWhitespace }
 }
 
-public struct ShortcodeChunkDecoder {
+public struct ShortcodeChunkParser {
     public init() {}
 
-    public func decode(_ text: Substring) -> ShortcodeChunk? {
+    public func parse(_ text: Substring) -> ShortcodeChunk? {
         let hasPrefixWhiteSpaceReference = Reference<Bool>()
         let hasSuffixWhiteSpaceReference = Reference<Bool>()
         let shortcodeReference = Reference<Substring>()
@@ -55,18 +61,28 @@ public struct ShortcodeChunkDecoder {
         }
         guard let match = text.wholeMatch(of: regex) else { return nil }
 
-        let hasPrefixWhiteSpace = match[hasPrefixWhiteSpaceReference]
-        let hasSuffixWhiteSpace = match[hasSuffixWhiteSpaceReference]
+        let hasLeadingWhitespace = match[hasPrefixWhiteSpaceReference]
+        let hasTrailingWhitespace = match[hasSuffixWhiteSpaceReference]
         let shortcodeRawValue = match[shortcodeReference]
         let shortcodeName = match[shortcodeNameReference]
 
         let shortcode = Shortcode(rawValue: shortcodeRawValue, name: shortcodeName)
 
         return ShortcodeChunk(
-            hasPrefixWhiteSpace: hasPrefixWhiteSpace,
-            hasSuffixWhiteSpace: hasSuffixWhiteSpace,
+            hasLeadingWhitespace: hasLeadingWhitespace,
+            hasTrailingWhitespace: hasTrailingWhitespace,
             shortcode: shortcode
         )
 
+    }
+}
+
+@available(*, deprecated, renamed: "ShortcodeChunkParser")
+public typealias ShortcodeChunkDecoder = ShortcodeChunkParser
+
+public extension ShortcodeChunkParser {
+    @available(*, deprecated, renamed: "parse(_:)")
+    func decode(_ text: Substring) -> ShortcodeChunk? {
+        parse(text)
     }
 }

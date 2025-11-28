@@ -2,10 +2,15 @@ import Extensions
 public import Foundation
 
 extension NSMutableAttributedString {
-    public func replaceShortcode(with transform: ShortcodeTransform) {
+    public func replaceShortcodes(with transform: ShortcodeTransform) {
         enumerateShortcodes(transform: transform) { statement, range, _ in
             replaceCharacters(in: range, with: statement.attributedText)
         }
+    }
+
+    @available(*, deprecated, renamed: "replaceShortcodes(with:)")
+    public func replaceShortcode(with transform: ShortcodeTransform) {
+        replaceShortcodes(with: transform)
     }
 }
 
@@ -14,19 +19,19 @@ extension NSAttributedString {
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
 
     func enumerateShortcodes(
-        decoder: ShortcodeChunkDecoder = ShortcodeChunkDecoder(),
+        decoder: ShortcodeChunkParser = ShortcodeChunkParser(),
         transform: (Shortcode) -> NSAttributedString?,
         using block: (AttributedStatement, NSRange, inout Bool) -> Void
     ) {
         let regex = Regex.shortcodeWithPadding
         enumerateMatches(regex) { substring, nsRange, shouldStop in
-            let chunk = decoder.decode(substring)
+            let chunk = decoder.parse(substring)
             if let chunk, let s = transform(chunk.shortcode) {
                 let statement = AttributedStatement(bodyAttributedText: s)
-                if chunk.hasPrefixWhiteSpace {
+                if chunk.hasLeadingWhitespace {
                     statement.leadingAttributedText = NSAttributedString(string: Self.whitespace)
                 }
-                if chunk.hasSuffixWhiteSpace {
+                if chunk.hasTrailingWhitespace {
                     statement.trailingAttributedText = NSAttributedString(string: Self.whitespace)
                 }
                 block(statement, nsRange, &shouldStop)

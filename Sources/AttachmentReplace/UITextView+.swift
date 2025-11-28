@@ -2,11 +2,6 @@ import Extensions
 public import UIKit
 
 extension UITextView {
-    public enum Granularity {
-        case selectedLine
-        case document
-    }
-
     public typealias AttachmentTransform = (NSTextAttachment) -> NSAttributedString?
 
     public func setReplacedAttributedText(

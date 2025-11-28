@@ -1,5 +1,11 @@
 package import UIKit
 
+/// Scope of replacement to run on.
+public enum Granularity {
+    case selectedLine
+    case document
+}
+
 extension UITextView {
     /// silentReplace don't call delegates
     package func silentReplace(

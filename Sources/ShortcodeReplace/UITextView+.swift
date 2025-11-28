@@ -1,12 +1,7 @@
-import Extensions
 public import UIKit
+import Extensions
 
 extension UITextView {
-    public enum Granularity {
-        case selectedLine
-        case document
-    }
-
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
 
     public func setReplacedAttributedText(

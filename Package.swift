@@ -47,7 +47,10 @@ let package = Package(
         ),
         .testTarget(
             name: "TextReplaceKitTests",
-            dependencies: ["TextReplaceKit"]
+            dependencies: [
+                "TextReplaceKit",
+                "Extensions"
+            ]
         ),
     ]
 )

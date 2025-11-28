@@ -3,6 +3,7 @@ import Testing
 import UIKit
 
 @testable import TextReplaceKit
+@testable import Extensions
 
 @Suite
 struct AttributedStringSpec {
@@ -56,6 +57,42 @@ struct AttributedStringSpec {
         #expect(mutable.string.isEmpty)
 
         mutable.append("abc")
+    }
+
+    @Test("AttributedStatementで先頭/末尾の属性を保持する")
+    func attributedStatementKeepsLeadingTrailingAttributes() {
+        let leading = NSAttributedString(
+            string: "L",
+            attributes: [
+                NSAttributedString.Key.foregroundColor: UIColor.red
+            ]
+        )
+        let body = NSAttributedString(
+            string: "B",
+            attributes: [
+                NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 12)
+            ]
+        )
+        let trailing = NSAttributedString(
+            string: "T",
+            attributes: [
+                NSAttributedString.Key.foregroundColor: UIColor.blue
+            ]
+        )
+
+        let statement = AttributedStatement(bodyAttributedText: body)
+        statement.leadingAttributedText = leading
+        statement.trailingAttributedText = trailing
+
+        let composed = statement.attributedText
+
+        #expect(composed.string == "LBT")
+        let leadingColor = composed.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor
+        #expect(leadingColor?.isEqual(UIColor.red) == true)
+        let bodyFont = composed.attribute(.font, at: 1, effectiveRange: nil) as? UIFont
+        #expect(bodyFont?.isEqual(UIFont.boldSystemFont(ofSize: 12)) == true)
+        let trailingColor = composed.attribute(.foregroundColor, at: 2, effectiveRange: nil) as? UIColor
+        #expect(trailingColor?.isEqual(UIColor.blue) == true)
     }
 
     @Test("replaceした時に残った部分にattributesが残る")

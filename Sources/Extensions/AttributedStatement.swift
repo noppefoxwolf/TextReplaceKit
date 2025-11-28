@@ -18,7 +18,7 @@ package final class AttributedStatement {
         if let trailingAttributedText {
             attributedText.append(trailingAttributedText)
         }
-        attributedText.setAttributes(
+        attributedText.addAttributes(
             bodyAttributedText.attributes(at: 0, effectiveRange: nil),
             range: attributedText.range
         )

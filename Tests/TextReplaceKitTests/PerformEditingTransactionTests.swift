@@ -3,28 +3,31 @@ import UIKit
 
 @testable import TextReplaceKit
 
-private func makeTextView(text: String, selectedRange: NSRange) -> UITextView {
-    let textView = UITextView()
-    textView.text = text
-    textView.selectedRange = selectedRange
-    return textView
-}
-
-private func replace(
-    _ textView: UITextView,
-    in range: UITextRange? = nil,
-    with text: String
-) {
-    let targetRange = range ?? textView.documentRange
-    textView.replacePreservingSelection(
-        targetRange,
-        withAttributedText: NSAttributedString(string: text)
-    )
-}
 
 @MainActor
 @Suite("文字数が減るケース")
 struct SelectionPreservationWhenShrinkingTests {
+    @MainActor
+    func makeTextView(text: String, selectedRange: NSRange) -> UITextView {
+        let textView = UITextView()
+        textView.text = text
+        textView.selectedRange = selectedRange
+        return textView
+    }
+
+    @MainActor
+    func replace(
+        _ textView: UITextView,
+        in range: UITextRange? = nil,
+        with text: String
+    ) {
+        let targetRange = range ?? textView.documentRange
+        textView.replacePreservingSelection(
+            targetRange,
+            withAttributedText: NSAttributedString(string: text)
+        )
+    }
+    
     @Test("[]:emoji: -> []🐈")
     func replace() async throws {
         let textView = makeTextView(text: ":emoji:", selectedRange: NSRange(location: 0, length: 0))
@@ -152,6 +155,27 @@ struct SelectionPreservationWhenShrinkingTests {
 @MainActor
 @Suite("文字数が増えるケース")
 struct SelectionPreservationWhenExpandingTests {
+    @MainActor
+    func makeTextView(text: String, selectedRange: NSRange) -> UITextView {
+        let textView = UITextView()
+        textView.text = text
+        textView.selectedRange = selectedRange
+        return textView
+    }
+
+    @MainActor
+    func replace(
+        _ textView: UITextView,
+        in range: UITextRange? = nil,
+        with text: String
+    ) {
+        let targetRange = range ?? textView.documentRange
+        textView.replacePreservingSelection(
+            targetRange,
+            withAttributedText: NSAttributedString(string: text)
+        )
+    }
+    
     @Test("[]🐈 -> []:cat:")
     func replace() async throws {
         let textView = makeTextView(text: "🐈", selectedRange: NSRange(location: 0, length: 0))

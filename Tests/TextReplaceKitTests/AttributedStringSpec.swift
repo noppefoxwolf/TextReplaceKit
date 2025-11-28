@@ -49,6 +49,9 @@ struct AttributedStringSpec {
         #expect(mutable.string.isEmpty)
 
         mutable.insert("a", at: 0)
+
+        #expect(mutable.string == "a")
+        #expect(mutable.attribute(.font, at: 0, effectiveRange: nil) == nil)
     }
 
     @Test("空のmutable attributed stringにappendしてもクラッシュしない")
@@ -57,6 +60,26 @@ struct AttributedStringSpec {
         #expect(mutable.string.isEmpty)
 
         mutable.append("abc")
+
+        #expect(mutable.string == "abc")
+        #expect(mutable.attribute(.font, at: 0, effectiveRange: nil) == nil)
+        #expect(mutable.attribute(.font, at: 1, effectiveRange: nil) == nil)
+        #expect(mutable.attribute(.font, at: 2, effectiveRange: nil) == nil)
+    }
+
+    @Test("insertはindexをクランプし属性を引き継ぐ")
+    func insertClampsIndexAndKeepsAttributes() {
+        let font = UIFont.systemFont(ofSize: 10)
+        let mutable = NSMutableAttributedString(
+            string: "abc",
+            attributes: [.font: font]
+        )
+
+        // indexをlengthより大きく渡しても末尾に挿入される
+        mutable.insert("X", at: 10)
+        #expect(mutable.string == "abcX")
+        let attr = mutable.attribute(.font, at: 3, effectiveRange: nil) as? UIFont
+        #expect(attr?.isEqual(font) == true)
     }
 
     @Test("AttributedStatementで先頭/末尾の属性を保持する")

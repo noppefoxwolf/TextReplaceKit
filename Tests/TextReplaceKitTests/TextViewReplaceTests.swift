@@ -332,6 +332,20 @@ struct TextViewReplaceTests {
         )
         #expect(textView.visualText == "hoge :night_fox_dawn: []")
     }
+
+    @Test
+    func granularitySharedAcrossExtensions() {
+        let textView = UITextView()
+        textView.text = ":one: :two:"
+
+        let shortcodeTransform = { (_: Shortcode) -> NSAttributedString? in nil }
+        let attachmentTransform = { (_: NSTextAttachment) -> NSAttributedString? in nil }
+
+        textView.replaceShortcode(shortcodeTransform, granularity: .document)
+        textView.replaceAttachment(attachmentTransform, granularity: .document)
+
+        #expect(textView.visualText == ":one: :two:[]")
+    }
 }
 
 final class TextAttachment: NSTextAttachment {

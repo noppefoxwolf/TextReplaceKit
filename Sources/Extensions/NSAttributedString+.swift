@@ -26,16 +26,26 @@ extension AttributedString {
 
 extension NSMutableAttributedString {
     package func insert(_ string: String, at index: Int) {
-        guard length > 0 else { return }
-        let attributes = attributes(at: 0, effectiveRange: nil)
-        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
-        insert(newAttributedString, at: index)
+        let clampedIndex = Swift.max(0, Swift.min(index, length))
+        let baseAttributes: [NSAttributedString.Key: Any]
+        if length > 0 {
+            let attrIndex = clampedIndex == length ? length - 1 : clampedIndex
+            baseAttributes = attributes(at: attrIndex, effectiveRange: nil)
+        } else {
+            baseAttributes = [:]
+        }
+        let newAttributedString = NSAttributedString(string: string, attributes: baseAttributes)
+        insert(newAttributedString, at: clampedIndex)
     }
 
     package func append(_ string: String) {
-        guard length > 0 else { return }
-        let attributes = attributes(at: 0, effectiveRange: nil)
-        let newAttributedString = NSAttributedString(string: string, attributes: attributes)
+        let baseAttributes: [NSAttributedString.Key: Any]
+        if length > 0 {
+            baseAttributes = attributes(at: length - 1, effectiveRange: nil)
+        } else {
+            baseAttributes = [:]
+        }
+        let newAttributedString = NSAttributedString(string: string, attributes: baseAttributes)
         append(newAttributedString)
     }
 }

@@ -7,7 +7,7 @@ extension UITextView {
     public func setReplacedAttributedText(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
-        granularity: Granularity
+        granularity: TextReplaceGranularity
     ) {
         switch granularity {
         case .selectedLine:
@@ -30,7 +30,7 @@ extension UITextView {
     public func replaceAttachment(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
-        granularity: Granularity
+        granularity: TextReplaceGranularity
     ) {
         switch granularity {
         case .selectedLine:

@@ -6,7 +6,7 @@ extension UITextView {
 
     public func setReplacedAttributedText(
         _ transform: ShortcodeTransform,
-        granularity: Granularity
+        granularity: TextReplaceGranularity
     ) {
         switch granularity {
         case .selectedLine:
@@ -26,7 +26,7 @@ extension UITextView {
 
     public func replaceShortcode(
         _ transform: ShortcodeTransform,
-        granularity: Granularity
+        granularity: TextReplaceGranularity
     ) {
         switch granularity {
         case .selectedLine:

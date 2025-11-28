@@ -1,27 +1,44 @@
 # TextReplaceKit
 
-iOS 向けのテキスト置換ユーティリティ群です。`UITextView` を拡張してショートコード・添付ファイル・パディング挿入を安全に扱えます。
+Utility extensions for `UITextView` that safely handle shortcode replacement, text attachments, and padding insertion on iOS. Written in Swift 6 for iOS 18+.
 
-## モジュール構成
-- `TextReplaceKit`: エクスポート用エントリポイント。
-- `ShortcodeReplace`: `:emoji:` 形式のショートコード検出と置換。
-- `AttachmentReplace`: `NSTextAttachment` の置換。
-- `PaddingInsert`: 先頭/末尾のスペース付与や追記。
-- `Extensions`: 共有ユーティリティ。
+## Features
+- Replace `:shortcode:` tokens with attributed content.
+- Replace `NSTextAttachment` instances with attributed text (optionally skipping already padded attachments).
+- Insert text with automatic leading/trailing padding.
+- Selection-preserving replacements to keep cursor and ranges stable.
+- Small, modular targets so you only import what you need.
 
-## 主な API
-### ショートコード置換 (UITextView)
+## Module Overview
+- **TextReplaceKit**: Export entry point that re-exports the modules below.
+- **ShortcodeReplace**: Detects and replaces `:emoji:`-style shortcodes.
+- **AttachmentReplace**: Transforms `NSTextAttachment` into attributed text.
+- **PaddingInsert**: Inserts or appends text while managing whitespace.
+- **Extensions**: Shared helpers (`NSRange`, `NSAttributedString`, `UITextView`, etc.).
+
+## Installation (Swift Package Manager)
+Add to your `Package.swift`:
+```swift
+.package(url: "https://github.com/noppefoxwolf/TextReplaceKit.git", from: "1.0.0"),
+```
+And include the products you need, e.g.:
+```swift
+.product(name: "TextReplaceKit", package: "TextReplaceKit")
+```
+
+## Usage
+### Replace shortcodes in a text view
 ```swift
 textView.replaceShortcodes({ shortcode in
     switch shortcode.name {
-    case "cat": NSAttributedString(attachment: TextAttachment("🐈"))
-    default: nil
+    case "cat": return NSAttributedString(attachment: TextAttachment("🐈"))
+    default: return nil
     }
-}, granularity: .selectedLine)  // .document も可
+}, granularity: .selectedLine) // or .document
 ```
-デリゲート通知なしで置換したい場合は `replaceShortcodesSilently` を使います。
+Use `replaceShortcodesSilently` to skip delegate callbacks.
 
-### 添付ファイル置換 (UITextView)
+### Replace attachments in a text view
 ```swift
 textView.replaceAttachments({ attachment in
     guard let attachment = attachment as? TextAttachment else { return nil }
@@ -29,27 +46,35 @@ textView.replaceAttachments({ attachment in
 }, skipUnbrokenAttachments: true, granularity: .document)
 ```
 
-### 選択範囲を保ったまま置換
+### Preserve selection while replacing
 ```swift
 textView.replacePreservingSelection(textRange, withText: "🐈")
 ```
-互換の旧名 `replaceAndAdjustSelectedTextRange` も残していますが、新 API への移行を推奨します。
+Legacy name `replaceAndAdjustSelectedTextRange` is kept as a deprecated alias.
 
-### ショートコード解析
+### Parse a shortcode token
 ```swift
 let parser = ShortcodeChunkParser()
-let chunk = parser.parse(" :cat: ")
-chunk?.hasLeadingWhitespace  // true
-chunk?.shortcode.name        // "cat"
+if let chunk = parser.parse(" :cat: ") {
+    chunk.hasLeadingWhitespace  // true
+    chunk.hasTrailingWhitespace // true
+    chunk.shortcode.name        // "cat"
+}
 ```
-旧名 `ShortcodeChunkDecoder.decode` は非推奨です。
+Deprecated aliases: `ShortcodeChunkDecoder` and `decode(_:)`.
 
-## 開発・テスト
+## Requirements
+- iOS 18+
+- Swift 6
+
+## Testing
 ```bash
 swift test
 ```
-※ サンドボックス環境では SwiftPM がユーザーキャッシュへ書き込めず失敗する場合があります。その際はキャッシュ書き込み可能な環境で実行してください。
+If you are running in a restricted/sandboxed environment, SwiftPM may fail to write its caches. Run tests in an environment that allows writing to user caches.
 
-## 変更履歴のポイント
-- メソッド/クラス名をより意図が伝わるものに改名し、既存名には非推奨エイリアスを残しました。
-- テストをヘルパー化して可読性を向上させました。
+## Contributing
+Issues and pull requests are welcome. Please keep changes small and include tests where possible.
+
+## License
+Specify your preferred OSS license in a `LICENSE` file (e.g., MIT). Until then, the project should be treated as “All rights reserved.”

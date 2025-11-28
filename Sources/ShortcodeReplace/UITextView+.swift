@@ -57,7 +57,7 @@ extension UITextView {
                 using: { statement, nsRange, _ in
                     let textRange = textRange(from: range.start, for: nsRange)
                     if let textRange {
-                        replaceAndAdjutSelectedTextRange(
+                        replaceAndAdjustSelectedTextRange(
                             textRange,
                             withAttributedText: statement.attributedText
                         )

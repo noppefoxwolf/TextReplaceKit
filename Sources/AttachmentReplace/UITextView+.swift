@@ -80,7 +80,7 @@ extension UITextView {
                     }
                     
                     if let transformed = transform(textAttachment) {
-                        replaceAndAdjutSelectedTextRange(textRange, withAttributedText: transformed)
+                        replaceAndAdjustSelectedTextRange(textRange, withAttributedText: transformed)
                         didChanged = true
                     }
                 }

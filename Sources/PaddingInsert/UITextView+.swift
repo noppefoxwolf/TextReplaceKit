@@ -1,12 +1,12 @@
-public import UIKit
 import Extensions
+public import UIKit
 
 extension UITextView {
     public enum TrailingPadding: Sendable {
         case insert
         case addition
     }
-    
+
     public func insertText(
         _ text: String,
         leadingPadding: Bool,
@@ -23,11 +23,11 @@ extension UITextView {
             usesDelegate: usesDelegate
         )
     }
-    
+
     public func appendText(_ text: String, usesDelegate: Bool = true) {
         let textRange = selectedTextRange ?? textRange(from: endOfDocument, to: endOfDocument)
         guard let textRange else { return }
-        
+
         let beforeTextRange = textRange
         replaceAndAdjustSelectedTextRange(textRange, withText: text)
         selectedTextRange = beforeTextRange
@@ -35,7 +35,7 @@ extension UITextView {
             delegate?.textViewDidChange?(self)
         }
     }
-    
+
     public func replaceText(
         textRange: UITextRange,
         withText text: String,

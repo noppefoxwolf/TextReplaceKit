@@ -1,6 +1,6 @@
+import AttachmentReplace
 import SwiftUI
 import TextReplaceKit
-import AttachmentReplace
 
 struct ContentView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
@@ -41,17 +41,20 @@ final class TextViewController: UIViewController, UITextViewDelegate {
             UIBarButtonItem(
                 image: UIImage(systemName: "abc"),
                 primaryAction: UIAction { [unowned self] _ in
-                    textView.replaceAttachment({ textAttachment in
-                        let textAttachment = textAttachment as! TextAttachment
-                        switch textAttachment.emoji {
-                        case "🦊":
-                            return NSAttributedString(string: "fox")
-                        case "😊":
-                            return NSAttributedString(string: "smile")
-                        default:
-                            return nil
-                        }
-                    }, granularity: .document)
+                    textView.replaceAttachment(
+                        { textAttachment in
+                            let textAttachment = textAttachment as! TextAttachment
+                            switch textAttachment.emoji {
+                            case "🦊":
+                                return NSAttributedString(string: "fox")
+                            case "😊":
+                                return NSAttributedString(string: "smile")
+                            default:
+                                return nil
+                            }
+                        },
+                        granularity: .document
+                    )
                 }
             ),
             UIBarButtonItem(
@@ -59,7 +62,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
                 primaryAction: UIAction { [unowned self] _ in
                     textView.setMarkedText("こんにち", selectedRange: NSRange(location: 0, length: 4))
                 }
-            )
+            ),
         ]
     }
 

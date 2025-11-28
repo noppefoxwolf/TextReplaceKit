@@ -1,14 +1,14 @@
-public import UIKit
 import Extensions
+public import UIKit
 
 extension UITextView {
     public enum Granularity {
         case selectedLine
         case document
     }
-    
+
     public typealias AttachmentTransform = (NSTextAttachment) -> NSAttributedString?
-    
+
     public func setReplacedAttributedText(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
@@ -31,7 +31,7 @@ extension UITextView {
             )
         }
     }
-    
+
     public func replaceAttachment(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
@@ -54,7 +54,7 @@ extension UITextView {
             )
         }
     }
-    
+
     func replaceAttachment(
         in range: UITextRange,
         transform: AttachmentTransform,
@@ -64,27 +64,37 @@ extension UITextView {
         var didChanged: Bool = false
         // 先頭からのrange
         let subAttributedText = attributedText(in: range)
-        
+
         let nsRange = subAttributedText.range
         subAttributedText
-            .enumerateAttribute(.attachment, in: nsRange, options: .reverse, using: { textAttachment, subNSRange, _ in
-                guard let textAttachment = textAttachment as? NSTextAttachment else { return }
-                
-                let textRange = textRange(from: range.start, for: subNSRange)
-                if let textRange {
-                    if skipUnbrokenAttachments {
-                        let hasPadding = hasLeadingPadding(at: textRange.start) && hasTrailingPadding(at: textRange.end)
-                        if hasPadding {
-                            return
+            .enumerateAttribute(
+                .attachment,
+                in: nsRange,
+                options: .reverse,
+                using: { textAttachment, subNSRange, _ in
+                    guard let textAttachment = textAttachment as? NSTextAttachment else { return }
+
+                    let textRange = textRange(from: range.start, for: subNSRange)
+                    if let textRange {
+                        if skipUnbrokenAttachments {
+                            let hasPadding =
+                                hasLeadingPadding(at: textRange.start)
+                                && hasTrailingPadding(at: textRange.end)
+                            if hasPadding {
+                                return
+                            }
+                        }
+
+                        if let transformed = transform(textAttachment) {
+                            replaceAndAdjustSelectedTextRange(
+                                textRange,
+                                withAttributedText: transformed
+                            )
+                            didChanged = true
                         }
                     }
-                    
-                    if let transformed = transform(textAttachment) {
-                        replaceAndAdjustSelectedTextRange(textRange, withAttributedText: transformed)
-                        didChanged = true
-                    }
                 }
-            })
+            )
         if didChanged && usesDelegate {
             delegate?.textViewDidChange?(self)
         }

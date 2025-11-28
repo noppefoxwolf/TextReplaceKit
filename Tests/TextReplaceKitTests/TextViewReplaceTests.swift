@@ -75,7 +75,7 @@ struct TextViewReplaceTests {
 
         #expect(textView.visualText == "1️⃣ 3️⃣[] 2️⃣")
     }
-    
+
     @Test
     func replaceBug() {
         let textView = UITextView()
@@ -91,12 +91,12 @@ struct TextViewReplaceTests {
         textView.replaceShortcode(transform, granularity: .selectedLine)
         #expect(textView.visualText == "🐈 :blobcat:test 🐈 🐈[]")
     }
-    
+
     @Test
     func replaceBug2() {
         class Watcher: NSObject, UITextViewDelegate {
             var didChange: Int = 0
-            
+
             func textViewDidChange(_ textView: UITextView) {
                 didChange += 1
             }
@@ -117,12 +117,12 @@ struct TextViewReplaceTests {
         #expect(textView.visualText == "🐈 :blobcat:test 🐈 🐈[]")
         #expect(watcher.didChange == 1)
     }
-    
+
     @Test
     func notCalledAnyChanges() {
         class Watcher: NSObject, UITextViewDelegate {
             var didChange: Int = 0
-            
+
             func textViewDidChange(_ textView: UITextView) {
                 didChange += 1
             }
@@ -138,7 +138,7 @@ struct TextViewReplaceTests {
         #expect(textView.visualText == ":blobcat: :blobcat:test :blobcat: :blobcat:[]")
         #expect(watcher.didChange == 0)
     }
-    
+
     // attributes.fontがnilだとクラッシュする
     @available(iOS 18.0, *)
     @Test(.enabled(if: false))
@@ -151,11 +151,20 @@ struct TextViewReplaceTests {
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             switch shortcode.name {
             case "one":
-                NSAttributedString(attachment: TextAttachment("1️⃣"), attributes: [.font : textView.font as Any])
+                NSAttributedString(
+                    attachment: TextAttachment("1️⃣"),
+                    attributes: [.font: textView.font as Any]
+                )
             case "two":
-                NSAttributedString(attachment: TextAttachment("2️⃣"), attributes: [.font : textView.font as Any])
+                NSAttributedString(
+                    attachment: TextAttachment("2️⃣"),
+                    attributes: [.font: textView.font as Any]
+                )
             case "three":
-                NSAttributedString(attachment: TextAttachment("3️⃣"), attributes: [.font : textView.font as Any])
+                NSAttributedString(
+                    attachment: TextAttachment("3️⃣"),
+                    attributes: [.font: textView.font as Any]
+                )
             default:
                 nil
             }
@@ -177,23 +186,35 @@ struct TextViewReplaceTests {
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
     }
-    
+
     @available(iOS 18.0, *)
     @Test
     func workaorundDefaultLineHeightForUILayoutBug() {
         let textView = UITextView()
         textView.font = UIFont.boldSystemFont(ofSize: 100)
-        textView.attributedText = NSAttributedString(string: ":one: :two:", attributes: textView.typingAttributes)
+        textView.attributedText = NSAttributedString(
+            string: ":one: :two:",
+            attributes: textView.typingAttributes
+        )
         #expect(textView.font != nil)
         #expect(textView.visualText == ":one: :two:[]")
         let transform = { (shortcode: Shortcode) -> NSAttributedString? in
             switch shortcode.name {
             case "one":
-                NSAttributedString(attachment: TextAttachment("1️⃣"), attributes: textView.typingAttributes)
+                NSAttributedString(
+                    attachment: TextAttachment("1️⃣"),
+                    attributes: textView.typingAttributes
+                )
             case "two":
-                NSAttributedString(attachment: TextAttachment("2️⃣"), attributes: textView.typingAttributes)
+                NSAttributedString(
+                    attachment: TextAttachment("2️⃣"),
+                    attributes: textView.typingAttributes
+                )
             case "three":
-                NSAttributedString(attachment: TextAttachment("3️⃣"), attributes: textView.typingAttributes)
+                NSAttributedString(
+                    attachment: TextAttachment("3️⃣"),
+                    attributes: textView.typingAttributes
+                )
             default:
                 nil
             }
@@ -208,17 +229,17 @@ struct TextViewReplaceTests {
         textView.selectedTextRange = textRange
         #expect(textView.font != nil)
         #expect(textView.visualText == "1️⃣ []2️⃣")
-        
+
         #expect(textView.font != nil)
         // Thread 1: "-[NSNull _defaultLineHeightForUILayout]: unrecognized selector sent to instance 0x1e007fa58"
         textView.insertText(":three:")
         #expect(textView.font != nil)
-        
+
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
         textView.replaceShortcode(transform, granularity: .document)
 
         #expect(textView.visualText == "1️⃣ :three:[]2️⃣")
-        
+
         let range = NSRange(location: 3, length: 5)
         var foundedFont: UIFont? = nil
         textView.attributedText.enumerateAttribute(.font, in: range) { font, range, _ in
@@ -226,7 +247,7 @@ struct TextViewReplaceTests {
         }
         #expect(foundedFont != nil)
     }
-    
+
     @Test
     func alreadyReplacedAttributedString() {
         let textView = UITextView()
@@ -257,7 +278,7 @@ struct TextViewReplaceTests {
 
         textView.insertText(":three:")
         #expect(textView.visualText == "1️⃣:three:[] 2️⃣")
-        
+
         let attachmentTransform = { (textAttachment: NSTextAttachment) -> NSAttributedString? in
             guard let textAttachment = textAttachment as? TextAttachment else { return nil }
             switch textAttachment.emoji {
@@ -267,26 +288,37 @@ struct TextViewReplaceTests {
                 return nil
             }
         }
-        textView.replaceAttachment(attachmentTransform, skipUnbrokenAttachments: true, granularity: .selectedLine)
+        textView.replaceAttachment(
+            attachmentTransform,
+            skipUnbrokenAttachments: true,
+            granularity: .selectedLine
+        )
         #expect(textView.visualText == ":one::three:[] 2️⃣")
-        
+
         textView.replaceShortcode(transform, granularity: .selectedLine)
         #expect(textView.visualText == ":one::three:[] 2️⃣")
     }
-    
+
     @Test
     func newlineBug() async throws {
         let textView = UITextView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         textView.insertText("\n")
         textView.insertText(":cat:")
-        textView.replaceShortcode({ _ in
-            NSAttributedString(attachment: TextAttachment("🐈"))
-        }, granularity: .selectedLine)
+        textView.replaceShortcode(
+            { _ in
+                NSAttributedString(attachment: TextAttachment("🐈"))
+            },
+            granularity: .selectedLine
+        )
         #expect(textView.visualText == "\n🐈[]")
-        textView.setReplacedAttributedText({ _ in  NSAttributedString(string: ":cat:") }, skipUnbrokenAttachments: true, granularity: .selectedLine)
+        textView.setReplacedAttributedText(
+            { _ in NSAttributedString(string: ":cat:") },
+            skipUnbrokenAttachments: true,
+            granularity: .selectedLine
+        )
         #expect(textView.visualText == "\n🐈[]")
     }
-    
+
     @Test
     func replacePiece() async throws {
         let textView = UITextView()

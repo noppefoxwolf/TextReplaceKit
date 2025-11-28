@@ -1,5 +1,5 @@
-public import Foundation
 import Extensions
+public import Foundation
 
 extension NSMutableAttributedString {
     public func replaceShortcode(with transform: ShortcodeTransform) {

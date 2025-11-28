@@ -1,5 +1,5 @@
-public import UIKit
 import Extensions
+public import UIKit
 
 extension UITextView {
     public enum Granularity {
@@ -8,7 +8,7 @@ extension UITextView {
     }
 
     public typealias ShortcodeTransform = (Shortcode) -> NSAttributedString?
-    
+
     public func setReplacedAttributedText(
         _ transform: ShortcodeTransform,
         granularity: Granularity
@@ -49,7 +49,11 @@ extension UITextView {
         }
     }
 
-    func replaceShortcode(in range: UITextRange, transform: ShortcodeTransform, usesDelegate: Bool = true) {
+    func replaceShortcode(
+        in range: UITextRange,
+        transform: ShortcodeTransform,
+        usesDelegate: Bool = true
+    ) {
         var didChanged: Bool = false
         attributedText(in: range)
             .enumerateShortcodes(

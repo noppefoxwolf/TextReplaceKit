@@ -11,17 +11,19 @@ extension UITextView {
         let length = offset(from: range.start, to: range.end)
         let nsRange = NSRange(location: location, length: length)
         textViewAttr.replaceCharacters(in: nsRange, with: attributedText)
-        
+
         let beforeTypingAttributes = typingAttributes
         self.attributedText = textViewAttr
         self.typingAttributes = beforeTypingAttributes
-        
+
         if let endedPosition = position(from: range.start, offset: attributedText.length) {
             self.selectedTextRange = textRange(from: endedPosition, to: endedPosition)
         }
     }
-    
-    package func closestPosition(to position: UITextPosition, within range: UITextRange) -> UITextPosition {
+
+    package func closestPosition(to position: UITextPosition, within range: UITextRange)
+        -> UITextPosition
+    {
         let lower = compare(range.start, to: position)
         let upper = compare(range.end, to: position)
         if upper == .orderedAscending || upper == .orderedSame {
@@ -46,11 +48,11 @@ extension UITextView {
             return false
         }
     }
-    
+
     package var documentRange: UITextRange {
         textRange(from: beginningOfDocument, to: endOfDocument)!
     }
-    
+
     package var selectedLineTextRange: UITextRange? {
         let start = selectedTextRange?.start ?? beginningOfDocument
         let end = selectedTextRange?.end ?? endOfDocument
@@ -67,44 +69,46 @@ extension UITextView {
         guard let lineRangeStart, let lineRangeEnd else { return nil }
         return textRange(from: lineRangeStart, to: lineRangeEnd)
     }
-    
+
     package func hasLeadingPadding(at position: UITextPosition) -> Bool {
         guard let beforeText = documentContextBefore(at: position) else { return true }
-        guard beforeText.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else { return false }
+        guard beforeText.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else {
+            return false
+        }
         return true
     }
-    
+
     package func hasTrailingPadding(at position: UITextPosition) -> Bool {
         guard let afterText = documentContextAfter(at: position) else { return true }
         guard afterText.rangeOfCharacter(from: .whitespacesAndNewlines) != nil else { return false }
         return true
     }
-    
+
     package func documentContextBefore(at position: UITextPosition) -> String? {
         guard let from = self.position(from: position, offset: -1) else { return nil }
         guard let textRange = self.textRange(from: from, to: position) else { return nil }
         return text(in: textRange)
     }
-    
+
     package func documentContextAfter(at position: UITextPosition) -> String? {
         guard let from = self.position(from: position, offset: 1) else { return nil }
         guard let textRange = self.textRange(from: from, to: position) else { return nil }
         return text(in: textRange)
     }
-    
+
     package func length(from: UITextPosition, to: UITextPosition) -> Int {
         let start = offset(from: beginningOfDocument, to: from)
         let end = offset(from: beginningOfDocument, to: to)
         return end - start
     }
-    
+
     package func textRange(location: Int, length: Int) -> UITextRange? {
         let from = position(from: beginningOfDocument, offset: location)
         let to = position(from: beginningOfDocument, offset: location + length)
         guard let from, let to else { return nil }
         return textRange(from: from, to: to)
     }
-    
+
     package func textRange(from position: UITextPosition, for nsRange: NSRange) -> UITextRange? {
         let from = self.position(
             from: position,
@@ -120,41 +124,57 @@ extension UITextView {
 }
 
 extension UITextView {
-    package func replaceAndAdjustSelectedTextRange(_ textRange: UITextRange, withText text: String) {
+    package func replaceAndAdjustSelectedTextRange(_ textRange: UITextRange, withText text: String)
+    {
         replaceAndAdjustSelectedTextRange(
             textRange,
             withAttributedText: NSAttributedString(string: text, attributes: typingAttributes)
         )
     }
-    
-    package func replaceAndAdjustSelectedTextRange(_ textRange: UITextRange, withAttributedText attributedText: NSAttributedString) {
+
+    package func replaceAndAdjustSelectedTextRange(
+        _ textRange: UITextRange,
+        withAttributedText attributedText: NSAttributedString
+    ) {
         let beforeSelectedTextRange = selectedTextRange
         let beforeTypingAttributes = typingAttributes
-        
+
         let mutableAttributedText = self.attributedText.copyAsMutable()
         let nsRange = NSRange(textRange, in: self)
         mutableAttributedText.replaceCharacters(in: nsRange, with: attributedText)
         self.attributedText = mutableAttributedText
         self.typingAttributes = beforeTypingAttributes
-        
+
         let changedTextRange = self.textRange(from: textRange.start, for: attributedText.range)
-        
+
         if let beforeSelectedTextRange, let changedTextRange {
-            self.selectedTextRange = adjustedTextRange(beforeSelectedTextRange, replacingRange: textRange, replacedRange: changedTextRange)
+            self.selectedTextRange = adjustedTextRange(
+                beforeSelectedTextRange,
+                replacingRange: textRange,
+                replacedRange: changedTextRange
+            )
         }
     }
-    
+
     func adjustedTextRange(
         _ range: UITextRange,
         replacingRange: UITextRange,
         replacedRange: UITextRange
     ) -> UITextRange? {
-        let from = adjustedPosition(range.start, replacingRange: replacingRange, replacedRange: replacedRange)
-        let to = adjustedPosition(range.end, replacingRange: replacingRange, replacedRange: replacedRange)
+        let from = adjustedPosition(
+            range.start,
+            replacingRange: replacingRange,
+            replacedRange: replacedRange
+        )
+        let to = adjustedPosition(
+            range.end,
+            replacingRange: replacingRange,
+            replacedRange: replacedRange
+        )
         guard let from, let to else { return nil }
         return textRange(from: from, to: to)
     }
-    
+
     func adjustedPosition(
         _ position: UITextPosition,
         replacingRange: UITextRange,

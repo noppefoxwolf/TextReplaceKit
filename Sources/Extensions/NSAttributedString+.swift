@@ -8,7 +8,7 @@ extension NSAttributedString {
     package func toModern() -> AttributedString {
         AttributedString(self)
     }
-    
+
     package var range: NSRange {
         NSRange(location: 0, length: length)
     }
@@ -30,7 +30,7 @@ extension NSMutableAttributedString {
         let newAttributedString = NSAttributedString(string: string, attributes: attributes)
         insert(newAttributedString, at: index)
     }
-    
+
     package func append(_ string: String) {
         let attributes = attributes(at: 0, effectiveRange: nil)
         let newAttributedString = NSAttributedString(string: string, attributes: attributes)

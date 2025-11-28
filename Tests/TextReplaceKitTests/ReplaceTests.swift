@@ -144,4 +144,3 @@ struct TextViewReplaceSelectionTests {
         #expect(textView.visualText == "The Hello[] World !!")
     }
 }
-

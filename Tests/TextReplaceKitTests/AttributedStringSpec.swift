@@ -1,6 +1,7 @@
 import Foundation
-import UIKit
 import Testing
+import UIKit
+
 @testable import TextReplaceKit
 
 @Suite
@@ -40,10 +41,13 @@ struct AttributedStringSpec {
         #expect(attr.toModern().characters.count == 1)
         #expect(attr.string.count == 1)
     }
-    
+
     @Test("replaceした時に残った部分にattributesが残る")
     func replaceAttributes() {
-        let attr = NSMutableAttributedString(string: "foo bar baz", attributes: [.font : UIFont.boldSystemFont(ofSize: 100)])
+        let attr = NSMutableAttributedString(
+            string: "foo bar baz",
+            attributes: [.font: UIFont.boldSystemFont(ofSize: 100)]
+        )
         let range = NSRange(location: 4, length: 3)
         #expect(attr.attributedSubstring(from: range).string == "bar")
         #expect(attr.attribute(.font, at: 4, effectiveRange: nil) != nil)
@@ -51,7 +55,7 @@ struct AttributedStringSpec {
         attr.replaceCharacters(in: NSRange(location: 8, length: 3), with: NSAttributedString("baz"))
         #expect(attr.attribute(.font, at: 4, effectiveRange: nil) != nil)
     }
-    
+
     @Test
     func findAttachmentUsingSpecialChar() async throws {
         let attr = NSMutableAttributedString(string: "foo")

@@ -1,6 +1,7 @@
 import Testing
-@testable import TextReplaceKit
 import UIKit
+
+@testable import TextReplaceKit
 
 @MainActor
 @Suite
@@ -14,7 +15,7 @@ struct UITextViewInsertTests {
         textView.insertText("o")
         #expect(textView.visualText == "Hello[]")
     }
-    
+
     @Test
     func insertHashAfterWord() async throws {
         let textView = UITextView()
@@ -24,7 +25,7 @@ struct UITextViewInsertTests {
         textView.insertText("#", leadingPadding: true, trailingPadding: .addition)
         #expect(textView.visualText == "Hello #[]")
     }
-    
+
     @Test
     func insertHashAfterSpace() async throws {
         let textView = UITextView()
@@ -34,7 +35,7 @@ struct UITextViewInsertTests {
         textView.insertText("#", leadingPadding: true, trailingPadding: .addition)
         #expect(textView.visualText == "Hello #[]")
     }
-    
+
     @Test
     func insertHashStart() async throws {
         let textView = UITextView()
@@ -44,7 +45,7 @@ struct UITextViewInsertTests {
         textView.insertText("#", leadingPadding: true, trailingPadding: .addition)
         #expect(textView.visualText == "#[]")
     }
-    
+
     @Test
     func testInsertHashInWord() async throws {
         let textView = UITextView()
@@ -54,7 +55,7 @@ struct UITextViewInsertTests {
         textView.insertText("#", leadingPadding: true, trailingPadding: .addition)
         #expect(textView.visualText == "Hel #[] lo")
     }
-    
+
     @Test
     func testInsertHashtagAfterWord() async throws {
         let textView = UITextView()
@@ -64,7 +65,7 @@ struct UITextViewInsertTests {
         textView.insertText("#apple", leadingPadding: true, trailingPadding: .insert)
         #expect(textView.visualText == "Hello #apple []")
     }
-    
+
     @Test
     func callDidChanged() async throws {
         final class Delegate: NSObject, UITextViewDelegate {
@@ -83,7 +84,7 @@ struct UITextViewInsertTests {
         textView.appendText("c")
         #expect(delegate.textViewDidChange == 3)
     }
-    
+
     @Test
     func newlineBug() async throws {
         let textView = UITextView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))

@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "TextReplaceKit",
-    platforms: [.iOS(.v16)],
+    platforms: [.iOS(.v18)],
     products: [
         .library(
             name: "TextReplaceKit",

@@ -42,6 +42,22 @@ struct AttributedStringSpec {
         #expect(attr.string.count == 1)
     }
 
+    @Test("空のmutable attributed stringにinsertしてもクラッシュしない")
+    func insertIntoEmptyMutableAttributedString() {
+        let mutable = NSMutableAttributedString()
+        #expect(mutable.string.isEmpty)
+
+        mutable.insert("a", at: 0)
+    }
+
+    @Test("空のmutable attributed stringにappendしてもクラッシュしない")
+    func appendIntoEmptyMutableAttributedString() {
+        let mutable = NSMutableAttributedString()
+        #expect(mutable.string.isEmpty)
+
+        mutable.append("abc")
+    }
+
     @Test("replaceした時に残った部分にattributesが残る")
     func replaceAttributes() {
         let attr = NSMutableAttributedString(

@@ -26,12 +26,14 @@ extension AttributedString {
 
 extension NSMutableAttributedString {
     package func insert(_ string: String, at index: Int) {
+        guard length > 0 else { return }
         let attributes = attributes(at: 0, effectiveRange: nil)
         let newAttributedString = NSAttributedString(string: string, attributes: attributes)
         insert(newAttributedString, at: index)
     }
 
     package func append(_ string: String) {
+        guard length > 0 else { return }
         let attributes = attributes(at: 0, effectiveRange: nil)
         let newAttributedString = NSAttributedString(string: string, attributes: attributes)
         append(newAttributedString)

@@ -18,10 +18,12 @@ package final class AttributedStatement {
         if let trailingAttributedText {
             attributedText.append(trailingAttributedText)
         }
-        attributedText.addAttributes(
-            bodyAttributedText.attributes(at: 0, effectiveRange: nil),
-            range: attributedText.range
-        )
+        if bodyAttributedText.length > 0 {
+            attributedText.addAttributes(
+                bodyAttributedText.attributes(at: 0, effectiveRange: nil),
+                range: attributedText.range
+            )
+        }
         return attributedText
     }
 }

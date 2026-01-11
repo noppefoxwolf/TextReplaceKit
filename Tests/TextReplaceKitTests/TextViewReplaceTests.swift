@@ -46,6 +46,19 @@ struct TextViewReplaceTests {
     }
 
     @Test
+    func replaceShortcodesWithEmptyReplacement() {
+        let textView = UITextView()
+        textView.text = "Hello :one: world"
+
+        textView.replaceShortcodes(
+            { _ in NSAttributedString(string: "") },
+            granularity: .document
+        )
+
+        #expect(textView.text == "Hello  world")
+    }
+
+    @Test
     func replaceShortcodesWholeDocument() {
         let textView = UITextView()
         textView.attributedText = NSAttributedString(string: ":one: :two:")

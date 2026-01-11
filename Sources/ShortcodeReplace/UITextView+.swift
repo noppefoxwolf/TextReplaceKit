@@ -24,14 +24,6 @@ extension UITextView {
         }
     }
 
-    @available(*, deprecated, renamed: "replaceShortcodesSilently(_:granularity:)")
-    public func setReplacedAttributedText(
-        _ transform: ShortcodeTransform,
-        granularity: TextReplaceGranularity
-    ) {
-        replaceShortcodesSilently(transform, granularity: granularity)
-    }
-
     public func replaceShortcodes(
         _ transform: ShortcodeTransform,
         granularity: TextReplaceGranularity
@@ -50,14 +42,6 @@ extension UITextView {
                 usesDelegate: true
             )
         }
-    }
-
-    @available(*, deprecated, renamed: "replaceShortcodes(_:granularity:)")
-    public func replaceShortcode(
-        _ transform: ShortcodeTransform,
-        granularity: TextReplaceGranularity
-    ) {
-        replaceShortcodes(transform, granularity: granularity)
     }
 
     func replaceShortcodes(

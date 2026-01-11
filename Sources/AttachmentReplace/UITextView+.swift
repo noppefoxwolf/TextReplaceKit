@@ -27,19 +27,6 @@ extension UITextView {
         }
     }
 
-    @available(*, deprecated, renamed: "replaceAttachmentsSilently(_:skipUnbrokenAttachments:granularity:)")
-    public func setReplacedAttributedText(
-        _ transform: AttachmentTransform,
-        skipUnbrokenAttachments: Bool = false,
-        granularity: TextReplaceGranularity
-    ) {
-        replaceAttachmentsSilently(
-            transform,
-            skipUnbrokenAttachments: skipUnbrokenAttachments,
-            granularity: granularity
-        )
-    }
-
     public func replaceAttachments(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
@@ -61,19 +48,6 @@ extension UITextView {
                 usesDelegate: true
             )
         }
-    }
-
-    @available(*, deprecated, renamed: "replaceAttachments(_:skipUnbrokenAttachments:granularity:)")
-    public func replaceAttachment(
-        _ transform: AttachmentTransform,
-        skipUnbrokenAttachments: Bool = false,
-        granularity: TextReplaceGranularity
-    ) {
-        replaceAttachments(
-            transform,
-            skipUnbrokenAttachments: skipUnbrokenAttachments,
-            granularity: granularity
-        )
     }
 
     func replaceAttachments(

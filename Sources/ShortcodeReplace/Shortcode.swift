@@ -10,12 +10,6 @@ public struct ShortcodeChunk: Sendable {
     public let hasLeadingWhitespace: Bool
     public let hasTrailingWhitespace: Bool
     public let shortcode: Shortcode
-
-    @available(*, deprecated, renamed: "hasLeadingWhitespace")
-    public var hasPrefixWhiteSpace: Bool { hasLeadingWhitespace }
-
-    @available(*, deprecated, renamed: "hasTrailingWhitespace")
-    public var hasSuffixWhiteSpace: Bool { hasTrailingWhitespace }
 }
 
 public struct ShortcodeChunkParser {
@@ -67,15 +61,5 @@ private extension ShortcodeChunkParser {
                 transform: { !$0.isEmpty }
             )
         }
-    }
-}
-
-@available(*, deprecated, renamed: "ShortcodeChunkParser")
-public typealias ShortcodeChunkDecoder = ShortcodeChunkParser
-
-public extension ShortcodeChunkParser {
-    @available(*, deprecated, renamed: "parse(_:)")
-    func decode(_ text: Substring) -> ShortcodeChunk? {
-        parse(text)
     }
 }

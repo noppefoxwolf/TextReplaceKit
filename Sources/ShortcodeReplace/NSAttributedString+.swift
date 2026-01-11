@@ -7,11 +7,6 @@ extension NSMutableAttributedString {
             replaceCharacters(in: range, with: statement.attributedText)
         }
     }
-
-    @available(*, deprecated, renamed: "replaceShortcodes(with:)")
-    public func replaceShortcode(with transform: ShortcodeTransform) {
-        replaceShortcodes(with: transform)
-    }
 }
 
 extension NSAttributedString {

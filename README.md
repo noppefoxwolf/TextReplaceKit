@@ -80,7 +80,7 @@ if let chunk = parser.parse(" :cat: ") {
 
 ## Requirements
 - iOS 18+
-- Swift tools 6.3+
+- Swift 6.3+
 
 ## Testing
 ```bash

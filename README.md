@@ -1,16 +1,16 @@
 # TextReplaceKit
 
-Utility extensions for `UITextView` that safely handle shortcode replacement, text attachments, and padding insertion on iOS. Written in Swift 6 for iOS 18+.
+Utility extensions for `UITextView` that handle shortcode replacement, text attachments, and padding insertion on iOS.
 
 ## Features
 - Replace `:shortcode:` tokens with attributed content.
 - Replace `NSTextAttachment` instances with attributed text (optionally skipping already padded attachments).
 - Insert text with automatic leading/trailing padding.
-- Selection-preserving replacements to keep cursor and ranges stable.
-- Small, modular targets so you only import what you need.
+- Replacements preserve the current selection where possible.
+- `TextReplaceKit` re-exports the implementation modules.
 
 ## Module Overview
-- **TextReplaceKit**: Export entry point that re-exports the modules below.
+- **TextReplaceKit**: Public entry point that re-exports the modules below.
 - **ShortcodeReplace**: Detects and replaces `:emoji:`-style shortcodes.
 - **AttachmentReplace**: Transforms `NSTextAttachment` into attributed text.
 - **PaddingInsert**: Inserts or appends text while managing whitespace.
@@ -27,6 +27,11 @@ And include the products you need, e.g.:
 ```
 
 ## Usage
+Import the package entry point:
+```swift
+import TextReplaceKit
+```
+
 ### Replace shortcodes in a text view
 ```swift
 textView.replaceShortcodes({ shortcode in
@@ -36,7 +41,7 @@ textView.replaceShortcodes({ shortcode in
     }
 }, granularity: .selectedLine) // or .document
 ```
-Use `replaceShortcodesSilently` to skip delegate callbacks.
+Use `replaceShortcodesSilently(_:granularity:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
 
 ### Replace attachments in a text view
 ```swift
@@ -45,12 +50,23 @@ textView.replaceAttachments({ attachment in
     return NSAttributedString(string: ":cat:")
 }, skipUnbrokenAttachments: true, granularity: .document)
 ```
+Use `replaceAttachmentsSilently(_:skipUnbrokenAttachments:granularity:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
 
-### Preserve selection while replacing
+### Insert text with padding
 ```swift
-textView.replacePreservingSelection(textRange, withText: "🐈")
+textView.insertText("#apple", leadingPadding: true, trailingPadding: .insert)
+textView.insertText("#", leadingPadding: true, trailingPadding: .addition)
 ```
-Legacy name `replaceAndAdjustSelectedTextRange` is kept as a deprecated alias.
+
+- `leadingPadding: true` inserts a leading space when the insertion point is not already preceded by whitespace.
+- `trailingPadding: .insert` inserts a trailing space as part of the replacement.
+- `trailingPadding: .addition` adds a trailing space after the replacement when the following character is not already whitespace.
+
+For plain insertion without padding options:
+```swift
+textView.insertText("hello")
+textView.appendText(" world")
+```
 
 ### Parse a shortcode token
 ```swift
@@ -61,11 +77,10 @@ if let chunk = parser.parse(" :cat: ") {
     chunk.shortcode.name        // "cat"
 }
 ```
-Deprecated aliases: `ShortcodeChunkDecoder` and `decode(_:)`.
 
 ## Requirements
 - iOS 18+
-- Swift 6
+- Swift tools 6.3+
 
 ## Testing
 ```bash

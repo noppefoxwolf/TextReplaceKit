@@ -10,7 +10,7 @@ import PackageDescription
 let package = Package(
     name: "Example",
     platforms: [
-        .iOS("16.0")
+        .iOS("18.0")
     ],
     products: [
         .iOSApplication(

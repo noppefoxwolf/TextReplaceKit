@@ -90,7 +90,7 @@ struct AttachmentReplaceTests {
             { (textAttachment: NSTextAttachment) in
                 nil
             },
-            granularity: .selectedLine
+            textRange: textView.selectedTextRange!
         )
     }
 }

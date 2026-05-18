@@ -39,18 +39,18 @@ textView.replaceShortcodes({ shortcode in
     case "cat": return NSAttributedString(attachment: TextAttachment("🐈"))
     default: return nil
     }
-}, granularity: .selectedLine) // or .document
+}, textRange: textView.selectedTextRange!)
 ```
-Use `replaceShortcodesSilently(_:granularity:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
+Use `replaceShortcodesSilently(_:textRange:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
 
 ### Replace attachments in a text view
 ```swift
 textView.replaceAttachments({ attachment in
     guard let attachment = attachment as? TextAttachment else { return nil }
     return NSAttributedString(string: ":cat:")
-}, skipUnbrokenAttachments: true, granularity: .document)
+}, skipUnbrokenAttachments: true, textRange: textView.selectedTextRange!)
 ```
-Use `replaceAttachmentsSilently(_:skipUnbrokenAttachments:granularity:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
+Use `replaceAttachmentsSilently(_:skipUnbrokenAttachments:textRange:)` to skip `UITextViewDelegate.textViewDidChange(_:)` callbacks.
 
 ### Insert text with padding
 ```swift
@@ -83,10 +83,15 @@ if let chunk = parser.parse(" :cat: ") {
 - Swift 6.3+
 
 ## Testing
+This package depends on UIKit, so run tests with an iOS Simulator destination:
 ```bash
-swift test
+xcodebuild test -scheme TextReplaceKit -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.6'
 ```
-If you are running in a restricted/sandboxed environment, SwiftPM may fail to write its caches. Run tests in an environment that allows writing to user caches.
+If multiple simulators match the same name and OS, specify a simulator id instead:
+```bash
+xcodebuild test -scheme TextReplaceKit -destination 'id=634BDBF1-1FF3-489D-9AA6-97F303ED9B05'
+```
+Plain `swift test` builds for the macOS host and will fail because UIKit is unavailable there.
 
 ## Contributing
 Issues and pull requests are welcome. Please keep changes small and include tests where possible.

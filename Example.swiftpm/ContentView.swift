@@ -53,7 +53,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
                                 return nil
                             }
                         },
-                        granularity: .document
+                        textRange: textView.selectedTextRange!
                     )
                 }
             ),
@@ -69,7 +69,7 @@ final class TextViewController: UIViewController, UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         textView.replaceShortcodes(
             transform(_:),
-            granularity: .selectedLine
+            textRange: textView.selectedTextRange!
         )
     }
 

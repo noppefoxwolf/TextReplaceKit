@@ -7,19 +7,11 @@ extension UITextView {
     public func replaceAttachmentsSilently(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
-        granularity: TextReplaceGranularity
+        textRange: UITextRange
     ) {
-        switch granularity {
-        case .selectedLine:
+        if let range = attachmentTextRange(adjacentTo: textRange) {
             replaceAttachments(
-                in: selectedLineTextRange ?? documentRange,
-                transform: transform,
-                skipUnbrokenAttachments: skipUnbrokenAttachments,
-                usesDelegate: false
-            )
-        case .document:
-            replaceAttachments(
-                in: documentRange,
+                in: range,
                 transform: transform,
                 skipUnbrokenAttachments: skipUnbrokenAttachments,
                 usesDelegate: false
@@ -30,19 +22,11 @@ extension UITextView {
     public func replaceAttachments(
         _ transform: AttachmentTransform,
         skipUnbrokenAttachments: Bool = false,
-        granularity: TextReplaceGranularity
+        textRange: UITextRange
     ) {
-        switch granularity {
-        case .selectedLine:
+        if let range = attachmentTextRange(adjacentTo: textRange) {
             replaceAttachments(
-                in: selectedLineTextRange ?? documentRange,
-                transform: transform,
-                skipUnbrokenAttachments: skipUnbrokenAttachments,
-                usesDelegate: true
-            )
-        case .document:
-            replaceAttachments(
-                in: documentRange,
+                in: range,
                 transform: transform,
                 skipUnbrokenAttachments: skipUnbrokenAttachments,
                 usesDelegate: true
@@ -93,5 +77,25 @@ extension UITextView {
         if didChanged && usesDelegate {
             delegate?.textViewDidChange?(self)
         }
+    }
+
+    private func attachmentTextRange(adjacentTo range: UITextRange) -> UITextRange? {
+        let lowerBound = offset(from: beginningOfDocument, to: range.start)
+        let upperBound = offset(from: beginningOfDocument, to: range.end)
+        let attributedText = attributedText ?? NSAttributedString()
+
+        var matchedRange: NSRange?
+        attributedText.enumerateAttribute(.attachment, in: attributedText.range) { value, nsRange, stop in
+            guard value is NSTextAttachment else { return }
+            guard nsRange.location <= upperBound && lowerBound <= nsRange.upperBound else { return }
+            if let currentRange = matchedRange {
+                matchedRange = currentRange.union(nsRange)
+            } else {
+                matchedRange = nsRange
+            }
+        }
+
+        guard let matchedRange else { return nil }
+        return textRange(location: matchedRange.location, length: matchedRange.length)
     }
 }

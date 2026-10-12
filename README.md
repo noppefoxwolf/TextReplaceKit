@@ -1,3 +1,9 @@
+```
+This package will be closed soon.
+Use ComposeEditor instead.
+https://github.com/noppefoxwolf/ComposeEditor
+```
+
 # TextReplaceKit
 
 Utility extensions for `UITextView` that safely handle shortcode replacement, text attachments, and padding insertion on iOS. Written in Swift 6 for iOS 18+.
